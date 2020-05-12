@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import Background from "../images/pinkmoasic.jpg";
+import Background from "../images/sandbackground1.png";
 import { ContextMenu, MenuItem, ContextMenuTrigger } from "react-contextmenu";
 import ReactDOM from "react-dom";
 import { throwStatement } from "@babel/types";
@@ -378,6 +378,17 @@ class Main extends Component {
 
   handleChoosefile = (eventArgs) => {
     var fileName = eventArgs.currentTarget.innerHTML.trim();
+    var request = "http://localhost:9000/openFile/" + fileName;
+    fetch(request)
+      .then((res) => res.text())
+      // .then((res) => this.setState({ apiResponse: res }));
+      .then((res) => this.acceptFilesFromServer(res));
+  };
+
+  acceptFilesFromServer = (text) => {
+    this.setState({ fileContent: text });
+    this.setState({ fileContentClean: text });
+    this.setTags();
   };
 
   render() {

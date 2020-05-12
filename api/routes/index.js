@@ -28,9 +28,9 @@ router.get("/", function (req, res, next) {
     }
     res.send(strArticles + "\n" + strConfig);
   }
-  getFilesInDirectoty("C:\\Users\\Yifat\\finalProject\\files").catch(
-    console.error
-  );
+  getFilesInDirectoty(
+    "C:\\Users\\Sapir\\Documents\\GitHub\\finalProject\\files"
+  ).catch(console.error);
 });
 
 module.exports = router;
