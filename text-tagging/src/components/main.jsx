@@ -34,7 +34,6 @@ class Main extends Component {
     console.log("in callApi");
     fetch("http://localhost:9000/")
       .then((res) => res.text())
-      // .then((res) => this.setState({ apiResponse: res }));
       .then((res) => this.arrageFileNamesRecivedFromServer(res));
   }
 
@@ -378,17 +377,45 @@ class Main extends Component {
 
   handleChoosefile = (eventArgs) => {
     var fileName = eventArgs.currentTarget.innerHTML.trim();
-    var request = "http://localhost:9000/openFile/" + fileName;
-    fetch(request)
-      .then((res) => res.text())
-      // .then((res) => this.setState({ apiResponse: res }));
-      .then((res) => this.acceptFilesFromServer(res));
+    if (!fileName.endsWith(".txt")) {
+      var request = "http://localhost:9000/openConfigurationFile/" + fileName;
+      fetch(request)
+        .then((res) => res.text())
+        .then((res) => this.acceptConfigurationFilesFromServer(res));
+    } else {
+      var request = "http://localhost:9000/openFile/" + fileName;
+      fetch(request)
+        .then((res) => res.text())
+        .then((res) => this.acceptFilesFromServer(res));
+    }
   };
 
   acceptFilesFromServer = (text) => {
     this.setState({ fileContent: text });
     this.setState({ fileContentClean: text });
     this.setTags();
+  };
+
+  acceptConfigurationFilesFromServer = (text) => {
+    let conFileContent = text;
+    let newTags = {}; //person: "yellow", place: "red", bla: "lightpink", period: "green"};
+    // Helps to create the context menu.
+    let tagslist = [];
+
+    let lines = conFileContent.split("\n");
+    for (let i = 0; i < lines.length; i++) {
+      let currentPair = lines[i].split(":");
+      tagslist.push(currentPair[0]);
+      let pairKey = currentPair[0];
+      let pairValue = currentPair[1];
+      newTags[pairKey] = pairValue;
+    }
+
+    this.state.tags = newTags;
+    this.state.tagsList = tagslist;
+    this.setTags();
+    // Initiate setState so the view will update.
+    this.setState({ tags: newTags });
   };
 
   render() {
