@@ -51,72 +51,72 @@ class Main extends Component {
     console.log("in arrageFileNamesRecivedFromServer");
   };
 
-  hadleClickOnUpload = () => {
-    if (window.File && window.FileReader && window.FileList && window.Blob) {
-      var preview = document.getElementById("temporaryPlace");
-      var file = document.querySelector("input[id=text_file]").files[0];
-      var reader = new FileReader();
-      var textHolder = "File Content hasnot set";
+  // hadleClickOnUpload = () => {
+  // if (window.File && window.FileReader && window.FileList && window.Blob) {
+  // var preview = document.getElementById("temporaryPlace");
+  // var file = document.querySelector("input[id=text_file]").files[0];
+  // var reader = new FileReader();
+  // var textHolder = "File Content hasnot set";
 
-      var textFile = /text.*/;
-      if (file.type.match(textFile)) {
-        reader.onload = this.loadFile;
-      } else {
-        preview.innerHTML =
-          "<span class='error'>It doesn't seem to be a text file!</span>";
-      }
-      reader.readAsText(file);
-    } else {
-      alert("Your browser is too old to support HTML5 File API");
-    }
-  };
+  // var textFile = /text.*/;
+  // if (file.type.match(textFile)) {
+  //   reader.onload = this.loadFile;
+  // } else {
+  //   preview.innerHTML =
+  //     "<span class='error'>It doesn't seem to be a text file!</span>";
+  // }
+  // reader.readAsText(file);
+  //} else {
+  // alert("Your browser is too old to support HTML5 File API");
+  //}
+  //};
 
-  loadConfiguration = () => {
-    if (window.File && window.FileReader && window.FileList && window.Blob) {
-      var preview = document.getElementById("temporaryPlace");
-      var file = document.querySelector("input[id=config_file]").files[0];
-      var reader = new FileReader();
-      var textHolder = "File Content hasnot set";
+  // loadConfiguration = () => {
+  //   if (window.File && window.FileReader && window.FileList && window.Blob) {
+  //    var preview = document.getElementById("temporaryPlace");
+  //   var file = document.querySelector("input[id=config_file]").files[0];
+  //   var reader = new FileReader();
+  //   var textHolder = "File Content hasnot set";
 
-      var textFile = /text.*/;
-      if (file.type.match(textFile)) {
-        reader.onload = this.tagsConvert;
-      } else {
-        preview.innerHTML =
-          "<span class='error'>It doesn't seem to be a text file!</span>";
-      }
-      reader.readAsText(file);
-    } else {
-      alert("Your browser is too old to support HTML5 File API");
-    }
-  };
+  //  var textFile = /text.*/;
+  //  if (file.type.match(textFile)) {
+  //   reader.onload = this.tagsConvert;
+  // } else {
+  //  preview.innerHTML =
+  //   "<span class='error'>It doesn't seem to be a text file!</span>";
+  // }
+  // reader.readAsText(file);
+  //} else {
+  //  alert("Your browser is too old to support HTML5 File API");
+  // }
+  // };
   //if (file.type.match(textFile)) {
   //  reader.onload = function(event) {
   //    preview.innerHTML = event.target.result;
   //    //this.setState({ fileContent: event.target.result });
   //  };
   //}
-  tagsConvert = (eventTags) => {
-    let conFileContent = eventTags.target.result;
-    let newTags = {}; //person: "yellow", place: "red", bla: "lightpink", period: "green"};
-    // Helps to create the context menu.
-    let tagslist = [];
+  // tagsConvert = (eventTags) => {
+  // let conFileContent = eventTags.target.result;
+  // let newTags = {}; //person: "yellow", place: "red", bla: "lightpink", period: "green"};
+  // Helps to create the context menu.
+  // let tagslist = [];
 
-    let lines = conFileContent.split("\n");
-    for (let i = 0; i < lines.length; i++) {
-      let currentPair = lines[i].split(":");
-      tagslist.push(currentPair[0]);
-      let pairKey = currentPair[0];
-      let pairValue = currentPair[1];
-      newTags[pairKey] = pairValue;
-    }
+  //let lines = conFileContent.split("\n");
+  //for (let i = 0; i < lines.length; i++) {
+  //  let currentPair = lines[i].split(":");
+  //  tagslist.push(currentPair[0]);
+  //  let pairKey = currentPair[0];
+  //  let pairValue = currentPair[1];
+  //  newTags[pairKey] = pairValue;
+  //}
 
-    this.state.tags = newTags;
-    this.state.tagsList = tagslist;
-    this.setTags();
-    // Initiate setState so the view will update.
-    this.setState({ tags: newTags });
-  };
+  //this.state.tags = newTags;
+  //this.state.tagsList = tagslist;
+  //this.setTags();
+  // Initiate setState so the view will update.
+  //this.setState({ tags: newTags });
+  //};
 
   captureHighlightedText = (event, data) => {
     if (window.getSelection() == NaN) {
@@ -299,11 +299,11 @@ class Main extends Component {
     this.setState({ fileContent: taggedText });
   };
 
-  loadFile = (event) => {
-    this.setState({ fileContent: event.target.result });
-    this.setState({ fileContentClean: event.target.result });
-    this.setTags();
-  };
+  // loadFile = (event) => {
+  //   this.setState({ fileContent: event.target.result });
+  //   this.setState({ fileContentClean: event.target.result });
+  //   this.setTags();
+  // };
 
   // highlightText = () => {
   //   let textHolder = this.fileContentClean;
@@ -438,21 +438,24 @@ class Main extends Component {
         >
           <br></br>
           <br></br>
-          <h1> Manage Tags in Article</h1>
+          <h1>
+            <b>Welcome to Tags Manager</b>
+          </h1>
           <br></br>
           <div>
             <table>
               <tr>
                 <td>
                   {" "}
-                  <h5> Choose a file from the following files </h5>
+                  <h5> Please choose a file from the following files </h5>
                   {"          "}
                 </td>
                 <td>
                   {" "}
                   <h5>
                     {" "}
-                    Choose a configutation file from the following files
+                    <b>AND CHOOSE</b> a configutation file from the following
+                    files
                   </h5>{" "}
                 </td>
               </tr>
