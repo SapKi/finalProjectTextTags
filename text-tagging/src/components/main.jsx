@@ -124,8 +124,21 @@ class Main extends Component {
     }
     // The text is seperated to parts.
     // Get the index of the highlited text in his part.
-    let leftIndexOfHighlightedChunkAtHisSpan = window.getSelection()
-      .anchorOffset;
+    let leftIndexOfHighlightedChunkAtHisSpan;
+    let rightIndexOfHighlightedChunkAtHisSpan;
+    if (
+      window.getSelection().baseOffset <= window.getSelection().extentOffset
+    ) {
+      leftIndexOfHighlightedChunkAtHisSpan = window.getSelection().baseOffset;
+      rightIndexOfHighlightedChunkAtHisSpan = window.getSelection()
+        .extentOffset;
+    } else if (
+      window.getSelection().baseOffset > window.getSelection().extentOffset
+    ) {
+      leftIndexOfHighlightedChunkAtHisSpan = window.getSelection().extentOffset;
+      rightIndexOfHighlightedChunkAtHisSpan = window.getSelection().baseOffset;
+    }
+
     // Get the part number the highlited text is in.
     let spanOfHighlightedChunk = window.getSelection().anchorNode.parentElement
       .id;
@@ -144,24 +157,89 @@ class Main extends Component {
       }
     }
 
+    // indexOfCleanTextc contains the location of the first caracter chosen in the text as
+    // it in raw text.
+
+    // Sreaching for the begining of the highlighted word.
     let cleanText = this.state.fileContentClean;
+    let begining;
+    // If the first chracter is in a begining of a chunk.
+    if (leftIndexOfHighlightedChunkAtHisSpan == 0) {
+      begining = indexOfCleanText;
+    } else {
+      let indexToFindTheHighligtedWordStart = leftIndexOfHighlightedChunkAtHisSpan;
+      for (
+        ;
+        indexToFindTheHighligtedWordStart >= 0;
+        indexToFindTheHighligtedWordStart--
+      ) {
+        // If we reached the befining of the current paragraph.
+        if (indexToFindTheHighligtedWordStart == 0) {
+          begining = indexOfCleanText;
+          // If we reached a space character.
+        } else {
+          let previousChar =
+            cleanText[indexOfCleanText + indexToFindTheHighligtedWordStart - 1];
+          if (
+            previousChar == " " ||
+            previousChar == "\n" ||
+            previousChar == "\t"
+          ) {
+            begining = indexOfCleanText + indexToFindTheHighligtedWordStart;
+            break;
+          }
+        }
+      }
+    }
+
+    let textInChunk = window.getSelection().baseNode.data;
+    let end;
+    // If the last chracter is in the end of a chunk.
+    if (rightIndexOfHighlightedChunkAtHisSpan == textInChunk.length) {
+      end = indexOfCleanText + textInChunk.length;
+    } else {
+      let indexToFindTheHighligtedWordEnd = rightIndexOfHighlightedChunkAtHisSpan;
+      for (
+        ;
+        indexToFindTheHighligtedWordEnd <= textInChunk.length;
+        indexToFindTheHighligtedWordEnd++
+      ) {
+        // If we reached the end of the paragraph.
+        if (indexToFindTheHighligtedWordEnd == textInChunk.length) {
+          end = indexOfCleanText + textInChunk.length;
+          // If we reached a white space.
+        } else {
+          let nextChar =
+            cleanText[indexOfCleanText + indexToFindTheHighligtedWordEnd];
+          if (nextChar == " " || nextChar == "\n" || nextChar == "\t") {
+            end = indexOfCleanText + indexToFindTheHighligtedWordEnd;
+            break;
+          }
+        }
+      }
+    }
+
     let preTag;
     let inTag;
     let postTag;
 
     // If the highlited text is not already tagged.
     if (this.state.formattedtext[spanOfHighlightedChunk][0] != "%") {
-      indexOfCleanText += leftIndexOfHighlightedChunkAtHisSpan;
-      preTag = cleanText.substring(0, indexOfCleanText);
-      inTag = cleanText.substring(
-        indexOfCleanText,
-        indexOfCleanText + window.getSelection().toString().length
-      );
-      postTag = cleanText.substring(
-        indexOfCleanText + window.getSelection().toString().length,
-        cleanText.length
-      );
+      preTag = cleanText.substring(0, begining);
+      inTag = cleanText.substring(begining, end);
+      postTag = cleanText.substring(end, cleanText.length);
       this.state.isHighlightedTextTagged = false;
+      //indexOfCleanText += leftIndexOfHighlightedChunkAtHisSpan;
+      //preTag = cleanText.substring(0, indexOfCleanText);
+      //inTag = cleanText.substring(
+      //  indexOfCleanText,
+      //  indexOfCleanText + window.getSelection().toString().length
+      //);
+      //postTag = cleanText.substring(
+      //  indexOfCleanText + window.getSelection().toString().length,
+      //  cleanText.length
+      //);
+      //this.state.isHighlightedTextTagged = false;
     } else {
       let currentChunk = this.state.formattedtext[spanOfHighlightedChunk].split(
         "%"
@@ -479,6 +557,7 @@ class Main extends Component {
                 <ContextMenuTrigger id="some_unique_identifier">
                   <div
                     id="text"
+                    onClick={this.captureHighlightedText}
                     onClickCapture={this.captureHighlightedText}
                     style={{ backgroundColor: "white" }}
                   >
