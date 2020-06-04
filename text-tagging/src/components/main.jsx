@@ -26,10 +26,10 @@ class Main extends Component {
     preHighlightedText: "",
     highlightedText: "",
     postHighlightedText: "",
-    //leftIndex: -1,
-    //rightIndex: -1,
-    //begining: -1,
-    //end: -1,
+    //    leftIndex: -1,
+    //    rightIndex: -1,
+    //    begining: -1,
+    //    end: -1,
     isHighlightedTextTagged: false,
     apiResponse: "",
   };
@@ -122,6 +122,16 @@ class Main extends Component {
   //this.setState({ tags: newTags });
   //};
 
+  isSpesialChar = (character) => {
+    let charArray = [" ", "\n", "\t", ".", ","];
+    for (let i = 0; i < charArray.length; i++) {
+      if (charArray[i] == character) {
+        return true;
+      }
+    }
+    return false;
+  };
+
   captureHighlightedText = (event, data) => {
     if (window.getSelection() == NaN) {
       return;
@@ -184,11 +194,11 @@ class Main extends Component {
         } else {
           let previousChar =
             cleanText[indexOfCleanText + indexToFindTheHighligtedWordStart - 1];
-          if (
-            previousChar == " " ||
-            previousChar == "\n" ||
-            previousChar == "\t"
-          ) {
+          //(!(previousChar.match(/[a-z]/i) || previousChar.match(/[0-9]/)))
+          if (this.isSpesialChar(previousChar)) {
+            //  previousChar == " " ||
+            //  previousChar == "\n" ||
+            //  previousChar == "\t"
             begining = indexOfCleanText + indexToFindTheHighligtedWordStart;
             break;
           }
@@ -202,15 +212,18 @@ class Main extends Component {
     if (
       rightIndexOfHighlightedChunkAtHisSpan !=
         leftIndexOfHighlightedChunkAtHisSpan &&
-      (cleanText[
-        indexOfCleanText + rightIndexOfHighlightedChunkAtHisSpan - 1
-      ] == " " ||
-        cleanText[
-          indexOfCleanText + rightIndexOfHighlightedChunkAtHisSpan - 1
-        ] == "\t" ||
-        cleanText[
-          indexOfCleanText + rightIndexOfHighlightedChunkAtHisSpan - 1
-        ] == "\n")
+      this.isSpesialChar(
+        cleanText[indexOfCleanText + rightIndexOfHighlightedChunkAtHisSpan - 1]
+      )
+      //(cleanText[
+      //  indexOfCleanText + rightIndexOfHighlightedChunkAtHisSpan - 1
+      //] == " " ||
+      //  cleanText[
+      //    indexOfCleanText + rightIndexOfHighlightedChunkAtHisSpan - 1
+      //  ] == "\t" ||
+      //  cleanText[
+      //    indexOfCleanText + rightIndexOfHighlightedChunkAtHisSpan - 1
+      //  ] == "\n")
     ) {
       end = indexOfCleanText + rightIndexOfHighlightedChunkAtHisSpan - 1;
     } else if (rightIndexOfHighlightedChunkAtHisSpan == textInChunk.length) {
@@ -230,7 +243,8 @@ class Main extends Component {
         } else {
           let nextChar =
             cleanText[indexOfCleanText + indexToFindTheHighligtedWordEnd];
-          if (nextChar == " " || nextChar == "\n" || nextChar == "\t") {
+          if (this.isSpesialChar(nextChar)) {
+            //nextChar == " " || nextChar == "\n" || nextChar == "\t")
             end = indexOfCleanText + indexToFindTheHighligtedWordEnd;
             break;
           }
@@ -527,7 +541,6 @@ class Main extends Component {
           style={{ backgroundImage: `url(${Background})`, height: "100vh" }}
         >
           <br></br>
-
           <br></br>
           <h1>
             <b>Welcome to Tags Manager</b>
