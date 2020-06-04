@@ -26,6 +26,10 @@ class Main extends Component {
     preHighlightedText: "",
     highlightedText: "",
     postHighlightedText: "",
+    //leftIndex: -1,
+    //rightIndex: -1,
+    //begining: -1,
+    //end: -1,
     isHighlightedTextTagged: false,
     apiResponse: "",
   };
@@ -173,7 +177,7 @@ class Main extends Component {
         indexToFindTheHighligtedWordStart >= 0;
         indexToFindTheHighligtedWordStart--
       ) {
-        // If we reached the befining of the current paragraph.
+        // we reached the befining of the current paragraph.
         if (indexToFindTheHighligtedWordStart == 0) {
           begining = indexOfCleanText;
           // If we reached a space character.
@@ -194,8 +198,23 @@ class Main extends Component {
 
     let textInChunk = window.getSelection().baseNode.data;
     let end;
-    // If the last chracter is in the end of a chunk.
-    if (rightIndexOfHighlightedChunkAtHisSpan == textInChunk.length) {
+    //in case of automatic space added by clicking
+    if (
+      rightIndexOfHighlightedChunkAtHisSpan !=
+        leftIndexOfHighlightedChunkAtHisSpan &&
+      (cleanText[
+        indexOfCleanText + rightIndexOfHighlightedChunkAtHisSpan - 1
+      ] == " " ||
+        cleanText[
+          indexOfCleanText + rightIndexOfHighlightedChunkAtHisSpan - 1
+        ] == "\t" ||
+        cleanText[
+          indexOfCleanText + rightIndexOfHighlightedChunkAtHisSpan - 1
+        ] == "\n")
+    ) {
+      end = indexOfCleanText + rightIndexOfHighlightedChunkAtHisSpan - 1;
+    } else if (rightIndexOfHighlightedChunkAtHisSpan == textInChunk.length) {
+      // If the last chracter is in the end of a chunk.
       end = indexOfCleanText + textInChunk.length;
     } else {
       let indexToFindTheHighligtedWordEnd = rightIndexOfHighlightedChunkAtHisSpan;
@@ -260,6 +279,10 @@ class Main extends Component {
       );
       this.state.isHighlightedTextTagged = true;
     }
+    this.state.leftIndex = leftIndexOfHighlightedChunkAtHisSpan;
+    this.state.rightIndex = rightIndexOfHighlightedChunkAtHisSpan;
+    this.state.begining = begining;
+    this.state.end = end;
     this.setState({ preHighlightedText: preTag });
     this.setState({ highlightedText: inTag });
     this.setState({ postHighlightedText: postTag });
@@ -497,17 +520,6 @@ class Main extends Component {
   };
 
   render() {
-    //<button onClick={this.highlightText}> Highlight</button>
-    //<input
-    //id="tags"
-    //type="text"
-    //height="200"
-    //width="200"
-    //value={this.state.tagbox}
-    //onChange={this.handleChange}
-    //>
-    //<button onClick={this.addTag}> Add tags</button>
-
     return (
       <React.Fragment>
         <div
@@ -515,6 +527,7 @@ class Main extends Component {
           style={{ backgroundImage: `url(${Background})`, height: "100vh" }}
         >
           <br></br>
+
           <br></br>
           <h1>
             <b>Welcome to Tags Manager</b>
@@ -557,7 +570,6 @@ class Main extends Component {
                 <ContextMenuTrigger id="some_unique_identifier">
                   <div
                     id="text"
-                    onClick={this.captureHighlightedText}
                     onClickCapture={this.captureHighlightedText}
                     style={{ backgroundColor: "white" }}
                   >
@@ -577,6 +589,16 @@ class Main extends Component {
   }
 }
 export default Main;
+// for debug
+//          <dir> startIndex: {this.state.leftIndex} </dir>
+//          <dir> endIndex: {this.state.rightIndex} </dir>
+//          <dir> begining: {this.state.begining} </dir>
+//          <dir> end: {this.state.end} </dir>
+//          <dir> pre: {this.state.preHighlightedText} </dir>
+//          <dir> in: {this.state.highlightedText} </dir>
+//          <dir> post: {this.state.postHighlightedText}</dir>
+
+//onClick={this.captureHighlightedText}
 
 /**
 <p>
@@ -596,3 +618,4 @@ export default Main;
             ></input>
           </p>
            */
+//onDoubleClickCapture={this.captureHighlightedText}

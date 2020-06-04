@@ -11,6 +11,7 @@ router.get("/", function (req, res, next) {
     const dirArticlies = await fs.promises.opendir(path + "//articles");
     for await (const dirent of dirArticlies) {
       if (strArticles != "") {
+        ` `;
         strArticles = strArticles + "," + dirent.name;
       } else {
         strArticles = dirent.name;
