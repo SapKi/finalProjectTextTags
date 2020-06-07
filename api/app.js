@@ -8,6 +8,7 @@ var indexRouter = require("./routes/index");
 var usersRouter = require("./routes/users");
 var testAPIRouter = require("./routes/testAPI");
 var openFileRouter = require("./routes/openFile");
+var saveFileRouter = require("./routes/saveFile");
 var openConfigurationRouter = require("./routes/openConfigurationFile");
 var app = express();
 
@@ -26,6 +27,7 @@ app.use("/", indexRouter);
 app.use("/users", usersRouter);
 app.use("/testAPI", testAPIRouter);
 app.use("/openFile", openFileRouter);
+app.use("/saveFile", saveFileRouter);
 app.use("/openConfigurationFile", openConfigurationRouter);
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {

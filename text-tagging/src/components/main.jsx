@@ -6,6 +6,7 @@ import { throwStatement } from "@babel/types";
 
 class Main extends Component {
   state = {
+    filename: "",
     fileContent: "",
     fileContentClean: "",
     tagbox: "Enter text to mark",
@@ -505,9 +506,22 @@ class Main extends Component {
     }
   };
 
+  handleSaveFile = (eventArgs) => {
+    let request = this.state.filename + "\n" + this.fileContentClean;
+    let address = "http://localhost:9000/saveFile";
+
+    fetch(address, { method: "post", body: request }).then(function (response) {
+      console.log(response);
+    });
+  };
+
   acceptFilesFromServer = (text) => {
-    this.setState({ fileContent: text });
-    this.setState({ fileContentClean: text });
+    let filename = text.split("\n", 2);
+    //first chunk of text is the name
+    this.setstate({ filename: filename[0] });
+    //the rest of the text
+    this.setState({ fileContent: filename[1] });
+    this.setState({ fileContentClean: filename[1] });
     this.setTags();
   };
 
@@ -574,6 +588,12 @@ class Main extends Component {
                 </td>
               </tr>
             </table>
+            <p>
+              <button onClick={this.handleSaveFile}>
+                {" "}
+                Save Work on System
+              </button>
+            </p>
           </div>
           <table length="100%">
             <tr length="100%">
