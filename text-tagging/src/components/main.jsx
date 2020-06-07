@@ -523,6 +523,7 @@ class Main extends Component {
     this.setState({ fileContent: filename[1] });
     this.setState({ fileContentClean: filename[1] });
     this.setTags();
+    //note
   };
 
   acceptConfigurationFilesFromServer = (text) => {
