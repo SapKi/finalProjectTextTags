@@ -385,7 +385,7 @@ class Main extends Component {
       }
     }
 
-    console.log("correct");
+    //console.log("correct");
 
     let tagRegex = RegExp("%.+%.+");
     let taggedText = (
@@ -507,18 +507,26 @@ class Main extends Component {
   };
 
   handleSaveFile = (eventArgs) => {
-    let request = this.state.filename + "\n" + this.fileContentClean;
+    let request = this.state.filename + "\n" + this.state.fileContentClean;
     let address = "http://localhost:9000/saveFile";
 
-    fetch(address, { method: "post", body: request }).then(function (response) {
-      console.log(response);
+    fetch(address, {
+      method: "POST",
+      headers: { "Content-type": "application/json" },
+      body: JSON.stringify({ data: request }),
+    }).then(function (response) {
+      let bla = response.body.getReader();
+      console.log(); bla.
     });
+    //.then(function (response) {
+    //console.log(response);
+    //});
   };
 
   acceptFilesFromServer = (text) => {
     let filename = text.split("\n", 2);
     //first chunk of text is the name
-    this.setstate({ filename: filename[0] });
+    this.setState({ filename: filename[0] });
     //the rest of the text
     this.setState({ fileContent: filename[1] });
     this.setState({ fileContentClean: filename[1] });

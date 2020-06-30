@@ -8,7 +8,9 @@ router.get("/", function (req, res, next) {
 
   async function getFilesInDirectoty(path) {
     var strArticles = "";
-    const dirArticlies = await fs.promises.opendir(path + "//articles");
+    var conpath = path + "\\articles";
+    console.log(conpath);
+    const dirArticlies = await fs.promises.opendir(conpath);
     for await (const dirent of dirArticlies) {
       if (strArticles != "") {
         ` `;
@@ -19,7 +21,8 @@ router.get("/", function (req, res, next) {
     }
 
     var strConfig = "";
-    const dirConfig = await fs.promises.opendir(path + "//configuration");
+    conpath = path + "\\configuration";
+    const dirConfig = await fs.promises.opendir(conpath);
     for await (const dirent of dirConfig) {
       if (strConfig != "") {
         strConfig = strConfig + "," + dirent.name;
@@ -29,10 +32,11 @@ router.get("/", function (req, res, next) {
     }
     res.send(strArticles + "\n" + strConfig);
   }
-  //C:\\Users\\Yifat\\finalProject\\files
-  getFilesInDirectoty(
-    "C:\\Users\\Sapir\\Documents\\GitHub\\finalProject\\files"
-  ).catch(console.error);
+  // C:\\Users\\Sapir\\Documents\\GitHub\\finalProject\\files
+  ("C:\\Users\\Yifat\\finalProject\\files");
+  getFilesInDirectoty("C:\\Users\\Yifat\\finalProject\\files").catch(
+    console.error()
+  );
 });
 
 module.exports = router;

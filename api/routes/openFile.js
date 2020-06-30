@@ -7,12 +7,11 @@ router.get("/:id", function (req, res, next) {
 
   fs.readFile(
     //C:\\Users\\Yifat\\finalProject\\files\\articles\\
-
-    "C:\\Users\\Sapir\\Documents\\GitHub\\finalProject\\files\\articles\\" +
-      fileName,
+    //  "C:\\Users\\Sapir\\Documents\\GitHub\\finalProject\\files\\articles\\"
+    "C:\\Users\\Yifat\\finalProject\\files\\articles\\" + fileName,
     function (err, data) {
       res.writeHead(200, { "Content-Type": "text/html" });
-      res.write(fileName + "/n");
+      res.write(fileName + "\n");
       res.write(data);
       return res.end();
     }
