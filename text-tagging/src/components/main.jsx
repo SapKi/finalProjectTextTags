@@ -56,25 +56,25 @@ class Main extends Component {
     console.log("in arrageFileNamesRecivedFromServer");
   };
 
-  // hadleClickOnUpload = () => {
-  // if (window.File && window.FileReader && window.FileList && window.Blob) {
-  // var preview = document.getElementById("temporaryPlace");
-  // var file = document.querySelector("input[id=text_file]").files[0];
-  // var reader = new FileReader();
-  // var textHolder = "File Content hasnot set";
+  handleClickOnUpload = () => {
+    if (window.File && window.FileReader && window.FileList && window.Blob) {
+      var preview = document.getElementById("temporaryPlace");
+      var file = document.querySelector("input[id=text_file]").files[0];
+      var reader = new FileReader();
+      var textHolder = "File Content hasnot set";
 
-  // var textFile = /text.*/;
-  // if (file.type.match(textFile)) {
-  //   reader.onload = this.loadFile;
-  // } else {
-  //   preview.innerHTML =
-  //     "<span class='error'>It doesn't seem to be a text file!</span>";
-  // }
-  // reader.readAsText(file);
-  //} else {
-  // alert("Your browser is too old to support HTML5 File API");
-  //}
-  //};
+      var textFile = /text.*/;
+      if (file.type.match(textFile)) {
+        reader.onload = this.loadFile;
+      } else {
+        preview.innerHTML =
+          "<span class='error'>It doesn't seem to be a text file!</span>";
+      }
+      reader.readAsText(file);
+    } else {
+      alert("Your browser is too old to support HTML5 File API");
+    }
+  };
 
   // loadConfiguration = () => {
   //   if (window.File && window.FileReader && window.FileList && window.Blob) {
@@ -123,7 +123,7 @@ class Main extends Component {
   //this.setState({ tags: newTags });
   //};
 
-  isSpesialChar = (character) => {
+  isSpecialChar = (character) => {
     let charArray = [" ", "\n", "\t", ".", ","];
     for (let i = 0; i < charArray.length; i++) {
       if (charArray[i] == character) {
@@ -196,7 +196,7 @@ class Main extends Component {
           let previousChar =
             cleanText[indexOfCleanText + indexToFindTheHighligtedWordStart - 1];
           //(!(previousChar.match(/[a-z]/i) || previousChar.match(/[0-9]/)))
-          if (this.isSpesialChar(previousChar)) {
+          if (this.isSpecialChar(previousChar)) {
             //  previousChar == " " ||
             //  previousChar == "\n" ||
             //  previousChar == "\t"
@@ -213,7 +213,7 @@ class Main extends Component {
     if (
       rightIndexOfHighlightedChunkAtHisSpan !=
         leftIndexOfHighlightedChunkAtHisSpan &&
-      this.isSpesialChar(
+      this.isSpecialChar(
         cleanText[indexOfCleanText + rightIndexOfHighlightedChunkAtHisSpan - 1]
       )
       //(cleanText[
@@ -244,7 +244,7 @@ class Main extends Component {
         } else {
           let nextChar =
             cleanText[indexOfCleanText + indexToFindTheHighligtedWordEnd];
-          if (this.isSpesialChar(nextChar)) {
+          if (this.isSpecialChar(nextChar)) {
             //nextChar == " " || nextChar == "\n" || nextChar == "\t")
             end = indexOfCleanText + indexToFindTheHighligtedWordEnd;
             break;
@@ -415,11 +415,19 @@ class Main extends Component {
     this.setState({ fileContent: taggedText });
   };
 
-  // loadFile = (event) => {
-  //   this.setState({ fileContent: event.target.result });
-  //   this.setState({ fileContentClean: event.target.result });
-  //   this.setTags();
-  // };
+  loadFile = (event) => {
+    this.state.fileContent = event.target.result;
+    this.state.filename = "tryUploadFile.txt";
+    this.handleSaveFile(event);
+    fetch("http://localhost:9000/")
+      .then((res) => res.text())
+      .then((res) => this.arrageFileNamesRecivedFromServer(res));
+    this.fileContent = "";
+    this.fileContentClean = "";
+    //this.setState({ fileContent: event.target.result });
+    //this.setState({ fileContentClean: event.target.result });
+    //this.setTags();
+  };
 
   // highlightText = () => {
   //   let textHolder = this.fileContentClean;
@@ -606,6 +614,14 @@ class Main extends Component {
                 Save Work on System
               </button>
             </p>
+            <p>
+              Upload New File to Server
+              <input
+                type="file"
+                id="text_file"
+                onChange={this.handleClickOnUpload}
+              ></input>
+            </p>
           </div>
           <table length="100%">
             <tr length="100%">
@@ -651,7 +667,7 @@ export default Main;
             <input
               type="file"
               id="text_file"
-              onChange={this.hadleClickOnUpload}
+              onChange={this.handleClickOnUpload}
             ></input>
           </p>
           <p>
