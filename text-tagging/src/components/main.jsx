@@ -513,10 +513,13 @@ class Main extends Component {
     fetch(address, {
       method: "POST",
       headers: { "Content-type": "application/json" },
-      body: JSON.stringify({ data: request }),
+      body: JSON.stringify({
+        data: this.state.fileContentClean,
+        filename: this.state.filename,
+      }),
     }).then(function (response) {
       let bla = response.body.getReader();
-      console.log(); bla.
+      console.log();
     });
     //.then(function (response) {
     //console.log(response);

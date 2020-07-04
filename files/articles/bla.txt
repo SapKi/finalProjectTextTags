@@ -1,2 +1,1 @@
-<person>herod</person> was a really awesome man. He was born in <place>petah - tikva</place> 
-but spent most of his life in <place>ashdod</place>, and <bla>bla bla</bla> bla bla bla.
+<person>herod</person> was a really <bla>awesome</bla> <person>man</person>. He <bla>was</bla> born in <place>petah - tikva</place> 
