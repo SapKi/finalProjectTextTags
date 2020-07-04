@@ -422,8 +422,7 @@ class Main extends Component {
     fetch("http://localhost:9000/")
       .then((res) => res.text())
       .then((res) => this.arrageFileNamesRecivedFromServer(res));
-    this.fileContent = "";
-    this.fileContentClean = "";
+    
     //this.setState({ fileContent: event.target.result });
     //this.setState({ fileContentClean: event.target.result });
     //this.setTags();
