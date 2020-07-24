@@ -12,10 +12,11 @@ router.post("/", function (req, res, next) {
 
   var data = "New File Contents";
   data = req.body.data;
+  //"C:\\Users\\Yifat\\finalProject\\files\\articles\\"
+  //"C:\\Users\\Sapir\\Documents\\GitHub\\finalProject\\files\\articles\\"
 
   var filename =
-    "C:\\Users\\Sapir\\Documents\\GitHub\\finalProject\\files\\articles\\" +
-    req.body.filename;
+    "C:\\Users\\Yifat\\finalProject\\files\\articles\\" + req.body.filename;
 
   console.log("data = " + data);
   console.log("filename = " + filename);

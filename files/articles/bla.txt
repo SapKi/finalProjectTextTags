@@ -1,1 +1,1 @@
-<person>herod</person> was a really <bla>awesome</bla> <person>man</person>. He <bla>was</bla> born in <place>petah - tikva</place> 
+<person>herod</person> was a really <person>awesome</person> man. He was born in petah - tikva 

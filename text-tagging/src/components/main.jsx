@@ -422,8 +422,8 @@ class Main extends Component {
     fetch("http://localhost:9000/")
       .then((res) => res.text())
       .then((res) => this.arrageFileNamesRecivedFromServer(res));
-    this.fileContent = "";
-    this.fileContentClean = "";
+    //  this.fileContent = "";
+    //  this.fileContentClean = "";
     //this.setState({ fileContent: event.target.result });
     //this.setState({ fileContentClean: event.target.result });
     //this.setTags();
@@ -494,13 +494,20 @@ class Main extends Component {
   };
 
   createList = (list) => {
-    return list.map((part, i) => (
-      <li onClick={this.handleChoosefile}> {part} </li>
-    ));
+    return list.map((part, i) => <option value={part}> {part}</option>);
   };
 
-  handleChoosefile = (eventArgs) => {
-    var fileName = eventArgs.currentTarget.innerHTML.trim();
+  loadDataAndConfFiles = (eventArgs) => {
+    var textFile = document.getElementById("fileChoser");
+    textFile = textFile.value;
+    this.handleChoosefile(textFile);
+    var confFile = document.getElementById("conffileChoser");
+    confFile = confFile.value;
+    this.handleChoosefile(confFile);
+  };
+
+  handleChoosefile = (filename) => {
+    var fileName = filename; //eventArgs.currentTarget.innerHTML.trim();
     if (!fileName.endsWith(".txt")) {
       var request = "http://localhost:9000/openConfigurationFile/" + fileName;
       fetch(request)
@@ -577,35 +584,41 @@ class Main extends Component {
           <br></br>
           <br></br>
           <h1>
-            <b>Welcome to Tags Manager</b>
+            {" "}
+            <b>Welcome to Tags Manager</b>{" "}
           </h1>
           <br></br>
           <div>
+            <p>
+              Choose article and configutation file or upload new atricle to the
+              from local computer
+            </p>
             <table>
               <tr>
+                <td> Choose an article: </td>
                 <td>
-                  {" "}
-                  <h5> Please choose a file from the following files </h5>
-                  {"          "}
-                </td>
-                <td>
-                  {" "}
-                  <h5>
+                  <select name="fileChoser" id="fileChoser">
                     {" "}
-                    <b>AND CHOOSE</b> a configutation file from the following
-                    files
-                  </h5>{" "}
+                    {this.createList(this.state.filesList)}
+                  </select>{" "}
                 </td>
               </tr>
               <tr>
+                <td>Choose a configuration file</td>
                 <td>
-                  {" "}
-                  <lu> {this.createList(this.state.filesList)} </lu>{" "}
+                  <select name="conffileChoser" id="conffileChoser">
+                    {this.createList(this.state.confFileList)}{" "}
+                  </select>
                 </td>
-                <td>
-                  {" "}
-                  <lu> {this.createList(this.state.confFileList)} </lu>{" "}
+              </tr>
+              <tr>
+                <td align="center" colspan="2">
+                  <button onClick={this.loadDataAndConfFiles}>
+                    {" "}
+                    Load files
+                  </button>
                 </td>
+                <td> </td>
               </tr>
             </table>
             <p>
