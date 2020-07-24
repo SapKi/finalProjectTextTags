@@ -11,6 +11,7 @@ router.get("/:id", function (req, res, next) {
     "C:\\Users\\Yifat\\finalProject\\files\\configuration\\" + fileName,
     function (err, data) {
       res.writeHead(200, { "Content-Type": "text/html" });
+      res.write(fileName + "\n");
       res.write(data);
       return res.end();
     }

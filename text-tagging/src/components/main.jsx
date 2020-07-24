@@ -7,6 +7,7 @@ import { throwStatement } from "@babel/types";
 class Main extends Component {
   state = {
     filename: "",
+    conffilename: "",
     fileContent: "",
     fileContentClean: "",
     tagbox: "Enter text to mark",
@@ -33,6 +34,7 @@ class Main extends Component {
     //    end: -1,
     isHighlightedTextTagged: false,
     apiResponse: "",
+    pageLayout: "choose",
   };
 
   callAPI() {
@@ -497,6 +499,106 @@ class Main extends Component {
     return list.map((part, i) => <option value={part}> {part}</option>);
   };
 
+  returnPageLayout = () => {
+    let page = "";
+    if (this.state.pageLayout == "choose") {
+      page = (
+        <div>
+          <h1>
+            {" "}
+            <b>Welcome to Tags Manager</b>{" "}
+          </h1>
+          <br></br>
+          <h5>
+            Choose article and choose configutation file or upload new article
+            from local computer:
+          </h5>
+          <br></br>
+          <table>
+            <tr>
+              <td> Choose an article: </td>
+              <td>
+                <select name="fileChoser" id="fileChoser">
+                  {" "}
+                  {this.createList(this.state.filesList)}
+                </select>{" "}
+              </td>
+            </tr>
+            <tr>
+              <td>Choose a configuration file: </td>
+              <td>
+                <select name="conffileChoser" id="conffileChoser">
+                  {this.createList(this.state.confFileList)}{" "}
+                </select>
+              </td>
+            </tr>
+            <tr>
+              <td align="center" colspan="2">
+                <br></br>
+                <button onClick={this.loadDataAndConfFiles}> Load files</button>
+              </td>
+              <td> </td>
+            </tr>
+          </table>
+          <br></br>
+          <p>
+            Upload New File to Server
+            <input
+              type="file"
+              id="text_file"
+              onChange={this.handleClickOnUpload}
+            ></input>
+          </p>
+        </div>
+      );
+    } else {
+      page = (
+        <div>
+          <h2>
+            {" "}
+            <b>
+              Add or Remove Tags by Highlighting or Right Clicking the Text
+            </b>{" "}
+          </h2>
+          <br></br>
+          <h5> Choosen Article: {this.state.filename}</h5>
+          <h5> Choosen Configuration File: {this.state.conffilename}</h5>
+          <br></br>
+          <table length="100%">
+            <tr length="100%">
+              <td length="25%"> </td>
+              <td length="50%">
+                {" "}
+                <ContextMenuTrigger id="some_unique_identifier">
+                  <div
+                    id="text"
+                    onClickCapture={this.captureHighlightedText}
+                    style={{ backgroundColor: "white" }}
+                  >
+                    {this.state.fileContent}
+                  </div>{" "}
+                </ContextMenuTrigger>
+                <ContextMenu id="some_unique_identifier">
+                  {this.createMenu()}
+                </ContextMenu>
+              </td>
+              <td length="25%"> </td>
+            </tr>
+          </table>
+          <br></br>
+          <p>
+            <button onClick={this.handleSaveFile}> Save Work on System</button>
+            {"     "}
+            <button onClick={this.retrunToChooseFile}>
+              {" "}
+              Return to Main Menu
+            </button>
+          </p>
+        </div>
+      );
+    }
+    return page;
+  };
   loadDataAndConfFiles = (eventArgs) => {
     var textFile = document.getElementById("fileChoser");
     textFile = textFile.value;
@@ -504,6 +606,7 @@ class Main extends Component {
     var confFile = document.getElementById("conffileChoser");
     confFile = confFile.value;
     this.handleChoosefile(confFile);
+    this.setState({ pageLayout: "edit" });
   };
 
   handleChoosefile = (filename) => {
@@ -553,7 +656,9 @@ class Main extends Component {
   };
 
   acceptConfigurationFilesFromServer = (text) => {
-    let conFileContent = text;
+    let filename = text.split("\n", 2);
+    this.setState({ conffilename: filename[0] });
+    let conFileContent = filename[1];
     let newTags = {}; //person: "yellow", place: "red", bla: "lightpink", period: "green"};
     // Helps to create the context menu.
     let tagslist = [];
@@ -574,95 +679,110 @@ class Main extends Component {
     this.setState({ tags: newTags });
   };
 
+  retrunToChooseFile = (eventArgs) => {
+    this.setState({ pageLayout: "choose" });
+  };
   render() {
     return (
       <React.Fragment>
         <div
           align="center"
-          style={{ backgroundImage: `url(${Background})`, height: "100vh" }}
+          style={{
+            backgroundImage: `url(${Background})`,
+            height: "100vh",
+          }}
         >
           <br></br>
           <br></br>
-          <h1>
-            {" "}
-            <b>Welcome to Tags Manager</b>{" "}
-          </h1>
-          <br></br>
-          <div>
-            <p>
-              Choose article and configutation file or upload new atricle to the
-              from local computer
-            </p>
-            <table>
-              <tr>
-                <td> Choose an article: </td>
-                <td>
-                  <select name="fileChoser" id="fileChoser">
-                    {" "}
-                    {this.createList(this.state.filesList)}
-                  </select>{" "}
-                </td>
-              </tr>
-              <tr>
-                <td>Choose a configuration file</td>
-                <td>
-                  <select name="conffileChoser" id="conffileChoser">
-                    {this.createList(this.state.confFileList)}{" "}
-                  </select>
-                </td>
-              </tr>
-              <tr>
-                <td align="center" colspan="2">
-                  <button onClick={this.loadDataAndConfFiles}>
-                    {" "}
-                    Load files
-                  </button>
-                </td>
-                <td> </td>
-              </tr>
-            </table>
-            <p>
-              <button onClick={this.handleSaveFile}>
-                {" "}
-                Save Work on System
-              </button>
-            </p>
-            <p>
-              Upload New File to Server
-              <input
-                type="file"
-                id="text_file"
-                onChange={this.handleClickOnUpload}
-              ></input>
-            </p>
-          </div>
-          <table length="100%">
-            <tr length="100%">
-              <td length="25%"> </td>
-              <td length="50%">
-                {" "}
-                <ContextMenuTrigger id="some_unique_identifier">
-                  <div
-                    id="text"
-                    onClickCapture={this.captureHighlightedText}
-                    style={{ backgroundColor: "white" }}
-                  >
-                    {this.state.fileContent}
-                  </div>{" "}
-                </ContextMenuTrigger>
-                <ContextMenu id="some_unique_identifier">
-                  {this.createMenu()}
-                </ContextMenu>
-              </td>
-              <td length="25%"> </td>
-            </tr>
-          </table>
+
+          {this.returnPageLayout()}
         </div>
       </React.Fragment>
     );
   }
 }
 export default Main;
+
+//<div
+//align="center"
+//style={{ backgroundImage: `url(${Background})`, height: "100vh" }}
+//>
+//<br></br>
+//<br></br>
+//<h1>
+//  {" "}
+//  <b>Welcome to Tags Manager</b>{" "}
+//</h1>
+//<br></br>
+//<div>
+//  <h5>
+//    Choose article and configutation file or upload new atricle to the
+//    from local computer
+//  </h5>
+//  <table>
+//    <tr>
+//      <td> Choose an article: </td>
+//      <td>
+//        <select name="fileChoser" id="fileChoser">
+//          {" "}
+//          {this.createList(this.state.filesList)}
+//        </select>{" "}
+//      </td>
+//    </tr>
+//    <tr>
+//      <td>Choose a configuration file</td>
+//      <td>
+//        <select name="conffileChoser" id="conffileChoser">
+//          {this.createList(this.state.confFileList)}{" "}
+//        </select>
+//      </td>
+//    </tr>
+//    <tr>
+//      <td align="center" colspan="2">
+//        <button onClick={this.loadDataAndConfFiles}>
+//          {" "}
+//          Load files
+//        </button>
+//      </td>
+//      <td> </td>
+//    </tr>
+//  </table>
+//  <br></br>
+//</div></div>  <p>
+//    Upload New File to Server
+//</p>    <input
+//      type="file"
+//      id="text_file"
+//      onChange={this.handleClickOnUpload}
+//    ></input>
+//  </p>
+//</div>
+//</div><table length="100%">
+//</table>  <tr length="100%">
+//    <td length="25%"> </td>
+//</tr>    <td length="50%">
+//      {" "}
+//</td>      <ContextMenuTrigger id="some_unique_identifier">
+//</ContextMenuTrigger>       <div
+//          id="text"
+//          onClickCapture={this.captureHighlightedText}
+//          style={{ backgroundColor: "white" }}
+//        >
+//          {this.state.fileContent}
+//        </div>{" "}
+//      </ContextMenuTrigger>
+//      <ContextMenu id="some_unique_identifier">
+//        {this.createMenu()}
+//      </ContextMenu>
+//    </td>
+//    <td length="25%"> </td>
+//  </tr>
+//</table>
+//<p>
+//  <button onClick={this.handleSaveFile}> Save Work on System</button>
+//</p>
+//</div>
+
 // for debug
 //          <dir> startIndex: {this.state.leftIndex} </dir>
 //          <dir> endIndex: {this.state.rightIndex} </dir>
