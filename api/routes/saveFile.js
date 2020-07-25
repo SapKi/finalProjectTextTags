@@ -20,7 +20,7 @@ router.post("/", function (req, res, next) {
 
   console.log("data = " + data);
   console.log("filename = " + filename);
-  fs.writeFile(filename, data, (err) => {
+  fs.writeFile(filename, data, "utf16le", (err) => {
     if (err) console.log(err);
     console.log("Successfully Written to File.");
   });

@@ -58,14 +58,17 @@ class Main extends Component {
     console.log("in arrageFileNamesRecivedFromServer");
   };
 
-  handleClickOnUpload = () => {
+  handleClickOnUpload = (event) => {
     if (window.File && window.FileReader && window.FileList && window.Blob) {
       var preview = document.getElementById("temporaryPlace");
       var file = document.querySelector("input[id=text_file]").files[0];
       var reader = new FileReader();
-      var textHolder = "File Content hasnot set";
-
       var textFile = /text.*/;
+
+      var namefile = event.target.value;
+      namefile = namefile.split("\\");
+      this.state.filename = namefile[namefile.length - 1];
+
       if (file.type.match(textFile)) {
         reader.onload = this.loadFile;
       } else {
@@ -419,7 +422,7 @@ class Main extends Component {
 
   loadFile = (event) => {
     this.state.fileContent = event.target.result;
-    this.state.filename = "tryUploadFile.txt";
+    this.state.fileContentClean = event.target.result;
     this.handleSaveFile(event);
     fetch("http://localhost:9000/")
       .then((res) => res.text())
@@ -656,16 +659,16 @@ class Main extends Component {
   };
 
   acceptConfigurationFilesFromServer = (text) => {
-    let filename = text.split("\n", 2);
+    let filename = text.split("\n");
     this.setState({ conffilename: filename[0] });
-    let conFileContent = filename[1];
+    let conFileContent = filename.slice(1, filename.length);
     let newTags = {}; //person: "yellow", place: "red", bla: "lightpink", period: "green"};
+
     // Helps to create the context menu.
     let tagslist = [];
 
-    let lines = conFileContent.split("\n");
-    for (let i = 0; i < lines.length; i++) {
-      let currentPair = lines[i].split(":");
+    for (let i = 0; i < conFileContent.length; i++) {
+      let currentPair = conFileContent[i].split(":");
       tagslist.push(currentPair[0]);
       let pairKey = currentPair[0];
       let pairValue = currentPair[1];

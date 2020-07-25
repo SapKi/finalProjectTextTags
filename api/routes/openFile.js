@@ -11,6 +11,7 @@ router.get("/:id", function (req, res, next) {
 
     //C: \\Users\\Sapir\\Documents\\GitHub\\finalProject\\files\\articles\\
     "C:\\Users\\Yifat\\finalProject\\files\\articles\\" + fileName,
+    "utf16le",
     function (err, data) {
       console.log("filecontent = " + data);
       res.writeHead(200, { "Content-Type": "text/html" });
