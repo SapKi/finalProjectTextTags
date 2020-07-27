@@ -10,6 +10,7 @@ var testAPIRouter = require("./routes/testAPI");
 var openFileRouter = require("./routes/openFile");
 var saveFileRouter = require("./routes/saveFile");
 var openConfigurationRouter = require("./routes/openConfigurationFile");
+var makeReportRouter = require("./routes/makeReport");
 var app = express();
 
 // view engine setup
@@ -29,6 +30,7 @@ app.use("/testAPI", testAPIRouter);
 app.use("/openFile", openFileRouter);
 app.use("/saveFile", saveFileRouter);
 app.use("/openConfigurationFile", openConfigurationRouter);
+app.use("/makeReport", makeReportRouter);
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
   next(createError(404));
