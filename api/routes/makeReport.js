@@ -8,7 +8,7 @@ router.post("/", function (req, res, next) {
   var filename = req.body.filename;
   var configurationFilename = req.body.configurationfilename;
   var configurationData = req.body.configurationdata;
-
+  makeReport(data,configurationData);
   //"C:\\Users\\Yifat\\finalProject\\files\\articles\\"
   //"C:\\Users\\Sapir\\Documents\\GitHub\\finalProject\\files\\articles\\"
 

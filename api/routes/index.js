@@ -33,11 +33,11 @@ router.get("/", function (req, res, next) {
     res.send(strArticles + "\n" + strConfig);
   }
   //"C:\\Users\\Yifat\\finalProject\\files"
-  //"C: \\Users\\Sapir\\Documents\\GitHub\\finalProject\\files"
-  ("C:\\Users\\Yifat\\finalProject\\files");
-  getFilesInDirectoty("C:\\Users\\Yifat\\finalProject\\files").catch(
-    console.error()
-  );
+  //"C:\\Users\\Sapir\\Documents\\GitHub\\finalProject\\files"
+  ("C:\\Users\\Sapir\\Documents\\GitHub\\finalProject\\files");
+  getFilesInDirectoty(
+    "C:\\Users\\Sapir\\Documents\\GitHub\\finalProject\\files"
+  ).catch(console.error());
 });
 
 module.exports = router;

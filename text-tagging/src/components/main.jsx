@@ -592,6 +592,10 @@ class Main extends Component {
           <p>
             <button onClick={this.handleSaveFile}> Save Work on System</button>
             {"     "}
+            <button onClick={this.handleStatisticsFile}>
+              Create Statistics File
+            </button>
+            {"    "}
             <button onClick={this.retrunToChooseFile}>
               {" "}
               Return to Main Menu
@@ -627,6 +631,24 @@ class Main extends Component {
     }
   };
 
+  handleStatisticsFile = (eventArgs) => {
+    let address = "http://localhost:9000/makeReport";
+
+    fetch(address, {
+      method: "POST",
+      headers: { "Content-type": "application/json" },
+      body: JSON.stringify({
+        data: this.state.fileContentClean,
+        filename: this.state.filename,
+        confData: this.state.tags,
+        confFileName: this.state.conffilename,
+      }),
+    }).then(function (response) {
+      let answer = response.body.getReader();
+      console.log();
+    });
+  };
+
   handleSaveFile = (eventArgs) => {
     let request = this.state.filename + "\n" + this.state.fileContentClean;
     let address = "http://localhost:9000/saveFile";
@@ -639,7 +661,7 @@ class Main extends Component {
         filename: this.state.filename,
       }),
     }).then(function (response) {
-      let bla = response.body.getReader();
+      let answer = response.body.getReader();
       console.log();
     });
     //.then(function (response) {

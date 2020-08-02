@@ -9,7 +9,8 @@ router.post("/", function (req, res, next) {
   //"C:\\Users\\Sapir\\Documents\\GitHub\\finalProject\\files\\articles\\"
 
   var filename =
-    "C:\\Users\\Yifat\\finalProject\\files\\articles\\" + req.body.filename;
+    "C:\\Users\\Sapir\\Documents\\GitHub\\finalProject\\files\\articles\\" +
+    req.body.filename;
 
   console.log("data = " + data);
   console.log("filename = " + filename);
