@@ -19,6 +19,7 @@ class Main extends Component {
       //date: "blue",
       //event: "purple"
     },
+    configurationFileContentClean: "",
     tagsList: [],
     filesList: [],
     confFileList: [],
@@ -640,7 +641,7 @@ class Main extends Component {
       body: JSON.stringify({
         data: this.state.fileContentClean,
         filename: this.state.filename,
-        confData: this.state.tags,
+        confData: this.state.configurationFileContentClean,
         confFileName: this.state.conffilename,
       }),
     }).then(function (response) {
@@ -684,6 +685,7 @@ class Main extends Component {
     let filename = text.split("\n");
     this.setState({ conffilename: filename[0] });
     let conFileContent = filename.slice(1, filename.length);
+    this.state.configurationFileContentClean = conFileContent;
     let newTags = {}; //person: "yellow", place: "red", bla: "lightpink", period: "green"};
 
     // Helps to create the context menu.

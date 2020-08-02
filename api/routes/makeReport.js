@@ -6,9 +6,9 @@ const { SSL_OP_SSLEAY_080_CLIENT_DH_BUG } = require("constants");
 router.post("/", function (req, res, next) {
   var data = req.body.data;
   var filename = req.body.filename;
-  var configurationFilename = req.body.configurationfilename;
-  var configurationData = req.body.configurationdata;
-  makeReport(data,configurationData);
+  var configurationFilename = req.body.confFileName;
+  var configurationData = req.body.confData;
+  makeReport(data, configurationData);
   //"C:\\Users\\Yifat\\finalProject\\files\\articles\\"
   //"C:\\Users\\Sapir\\Documents\\GitHub\\finalProject\\files\\articles\\"
 
@@ -22,9 +22,11 @@ router.post("/", function (req, res, next) {
 
 function makeReport(filedata, confdata) {
   // Get all the tags from the configuration file.
-  let tags = confdata.split("\n");
-  for (let i = 0; i < tags.length; i++) {
-    tags[i] = tags[i].split(":")[0];
+  // let tags = confdata.split("\r");
+  let tags = {};
+  for (let i = 0; i < confdata.length; i++) {
+    let separated = confdata[i].split(":");
+    tags[separated[0]] = tags[separated[1]].split(":")[0];
   }
 
   // Creates the dictionary that will contain foir each tags its apperiance.
