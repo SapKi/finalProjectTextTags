@@ -1,6 +1,8 @@
 var express = require("express");
 var router = express.Router();
 var fs = require("fs");
+var confLoader = require("../SettingsLoader");
+var conf = new confLoader();
 
 router.post("/", function (req, res, next) {
   var data = "New File Contents";
@@ -9,7 +11,10 @@ router.post("/", function (req, res, next) {
   //"C:\\Users\\Sapir\\Documents\\GitHub\\finalProject\\files\\articles\\"
 
   var filename =
-    "C:\\Users\\Sapir\\Documents\\GitHub\\finalProject\\files\\articles\\" +
+    conf.getRootFolder() +
+    "\\" +
+    conf.getArticlesFolder() +
+    "\\" +
     req.body.filename;
 
   console.log("data = " + data);

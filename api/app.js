@@ -13,6 +13,9 @@ var openConfigurationRouter = require("./routes/openConfigurationFile");
 var makeReportRouter = require("./routes/makeReport");
 var app = express();
 
+// General data of the aplication
+var appSettingFile = "appSetting.txt";
+
 // view engine setup
 app.set("views", path.join(__dirname, "views"));
 app.set("view engine", "jade");

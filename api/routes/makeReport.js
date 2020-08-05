@@ -25,8 +25,8 @@ function makeReport(filedata, confdata) {
   // let tags = confdata.split("\r");
   let tags = {};
   for (let i = 0; i < confdata.length; i++) {
-    let separated = confdata[i].split(":");
-    tags[separated[0]] = tags[separated[1]].split(":")[0];
+    let separated = confdata[i].trim().split(":");
+    tags[separated[0]] = separated[1];
   }
 
   // Creates the dictionary that will contain foir each tags its apperiance.

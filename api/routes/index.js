@@ -1,6 +1,8 @@
 var express = require("express");
 var router = express.Router();
 var fs = require("fs");
+var confLoader = require("../SettingsLoader");
+var conf = new confLoader();
 
 /* GET home page. */
 router.get("/", function (req, res, next) {
@@ -8,7 +10,7 @@ router.get("/", function (req, res, next) {
 
   async function getFilesInDirectoty(path) {
     var strArticles = "";
-    var conpath = path + "\\articles";
+    var conpath = path + "\\" + conf.getArticlesFolder();
     console.log(conpath);
     const dirArticlies = await fs.promises.opendir(conpath);
     for await (const dirent of dirArticlies) {
@@ -21,7 +23,7 @@ router.get("/", function (req, res, next) {
     }
 
     var strConfig = "";
-    conpath = path + "\\configuration";
+    conpath = path + "\\" + conf.getConfigurationsFolder();
     const dirConfig = await fs.promises.opendir(conpath);
     for await (const dirent of dirConfig) {
       if (strConfig != "") {
@@ -34,10 +36,8 @@ router.get("/", function (req, res, next) {
   }
   //"C:\\Users\\Yifat\\finalProject\\files"
   //"C:\\Users\\Sapir\\Documents\\GitHub\\finalProject\\files"
-  ("C:\\Users\\Sapir\\Documents\\GitHub\\finalProject\\files");
-  getFilesInDirectoty(
-    "C:\\Users\\Sapir\\Documents\\GitHub\\finalProject\\files"
-  ).catch(console.error());
+  //("C:\\Users\\Sapir\\Documents\\GitHub\\finalProject\\files");
+  getFilesInDirectoty(conf.getRootFolder()).catch(console.error());
 });
 
 module.exports = router;

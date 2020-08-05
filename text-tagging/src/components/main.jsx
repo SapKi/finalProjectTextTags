@@ -52,11 +52,14 @@ class Main extends Component {
   arrageFileNamesRecivedFromServer = (fileNames) => {
     // Saperate the files to text files and configuration files.
     let files = fileNames.split("\n");
+
+    // Seperate the text files names.
     let textFiles = files[0].split(",");
+
+    // Seperates the configuration file names.
     let confFiles = files[1].split(",");
     this.setState({ filesList: textFiles });
     this.setState({ confFileList: confFiles });
-    console.log("in arrageFileNamesRecivedFromServer");
   };
 
   handleClickOnUpload = (event) => {
@@ -71,7 +74,7 @@ class Main extends Component {
       this.state.filename = namefile[namefile.length - 1];
 
       if (file.type.match(textFile)) {
-        reader.onload = this.loadFile;
+        reader.onload = this.uploadFileToServer;
       } else {
         preview.innerHTML =
           "<span class='error'>It doesn't seem to be a text file!</span>";
@@ -82,63 +85,130 @@ class Main extends Component {
     }
   };
 
-  // loadConfiguration = () => {
-  //   if (window.File && window.FileReader && window.FileList && window.Blob) {
-  //    var preview = document.getElementById("temporaryPlace");
-  //   var file = document.querySelector("input[id=config_file]").files[0];
-  //   var reader = new FileReader();
-  //   var textHolder = "File Content hasnot set";
-
-  //  var textFile = /text.*/;
-  //  if (file.type.match(textFile)) {
-  //   reader.onload = this.tagsConvert;
-  // } else {
-  //  preview.innerHTML =
-  //   "<span class='error'>It doesn't seem to be a text file!</span>";
-  // }
-  // reader.readAsText(file);
-  //} else {
-  //  alert("Your browser is too old to support HTML5 File API");
-  // }
-  // };
-  //if (file.type.match(textFile)) {
-  //  reader.onload = function(event) {
-  //    preview.innerHTML = event.target.result;
-  //    //this.setState({ fileContent: event.target.result });
-  //  };
-  //}
-  // tagsConvert = (eventTags) => {
-  // let conFileContent = eventTags.target.result;
-  // let newTags = {}; //person: "yellow", place: "red", bla: "lightpink", period: "green"};
-  // Helps to create the context menu.
-  // let tagslist = [];
-
-  //let lines = conFileContent.split("\n");
-  //for (let i = 0; i < lines.length; i++) {
-  //  let currentPair = lines[i].split(":");
-  //  tagslist.push(currentPair[0]);
-  //  let pairKey = currentPair[0];
-  //  let pairValue = currentPair[1];
-  //  newTags[pairKey] = pairValue;
-  //}
-
-  //this.state.tags = newTags;
-  //this.state.tagsList = tagslist;
-  //this.setTags();
-  // Initiate setState so the view will update.
-  //this.setState({ tags: newTags });
-  //};
-
-  isSpecialChar = (character) => {
-    let charArray = [" ", "\n", "\t", ".", ","];
-    for (let i = 0; i < charArray.length; i++) {
-      if (charArray[i] == character) {
-        return true;
-      }
-    }
-    return false;
+  // previously called loadDataAndConfFiles
+  handleClickLoadFiles = (eventArgs) => {
+    var textFile = document.getElementById("fileChoser");
+    textFile = textFile.value;
+    this.getFileFromServer(textFile);
+    var confFile = document.getElementById("conffileChoser");
+    confFile = confFile.value;
+    this.getFileFromServer(confFile);
+    this.setState({ pageLayout: "edit" });
   };
 
+  handleStatisticsFile = (eventArgs) => {
+    let address = "http://localhost:9000/makeReport";
+
+    fetch(address, {
+      method: "POST",
+      headers: { "Content-type": "application/json" },
+      body: JSON.stringify({
+        data: this.state.fileContentClean,
+        filename: this.state.filename,
+        confData: this.state.configurationFileContentClean,
+        confFileName: this.state.conffilename,
+      }),
+    }).then(function (response) {
+      let answer = response.body.getReader();
+      console.log();
+    });
+  };
+
+  handleSaveFile = (eventArgs) => {
+    let request = this.state.filename + "\n" + this.state.fileContentClean;
+    let address = "http://localhost:9000/saveFile";
+
+    fetch(address, {
+      method: "POST",
+      headers: { "Content-type": "application/json" },
+      body: JSON.stringify({
+        data: this.state.fileContentClean,
+        filename: this.state.filename,
+      }),
+    }).then(function (response) {
+      let answer = response.body.getReader();
+      console.log();
+    });
+    //.then(function (response) {
+    //console.log(response);
+    //});
+  };
+
+  // retrunToChooseFile
+  handleClickRetrunToMainMenu = (eventArgs) => {
+    this.setState({ pageLayout: "choose" });
+  };
+
+  // previously called acceptFilesFromServer
+  setCurrentTextFile = (text) => {
+    let filename = text.split("\n");
+    let fileData = text.slice(filename[0].length + 1, text.le);
+    //first chunk of text is the name
+    this.setState({ filename: filename[0] });
+    //the rest of the text
+    this.setState({ fileContent: fileData });
+    this.setState({ fileContentClean: fileData });
+    this.setTags();
+    //note
+  };
+
+  // previously called acceptConfigurationFilesFromServer
+  setCurrentConfigurationFile = (text) => {
+    let filename = text.split("\n");
+    this.setState({ conffilename: filename[0] });
+    let conFileContent = filename.slice(1, filename.length);
+    this.state.configurationFileContentClean = conFileContent;
+    let newTags = {}; //person: "yellow", place: "red", bla: "lightpink", period: "green"};
+
+    // Helps to create the context menu.
+    let tagslist = [];
+
+    for (let i = 0; i < conFileContent.length; i++) {
+      let currentPair = conFileContent[i].split(":");
+      tagslist.push(currentPair[0]);
+      let pairKey = currentPair[0];
+      let pairValue = currentPair[1];
+      newTags[pairKey] = pairValue;
+    }
+
+    this.state.tags = newTags;
+    this.state.tagsList = tagslist;
+    this.setTags();
+    // Initiate setState so the view will update.
+    this.setState({ tags: newTags });
+  };
+
+  // previously called loadFile
+  uploadFileToServer = (event) => {
+    //this.state.fileContent = event.target.result;
+    //this.state.fileContentClean = event.target.result;
+
+    this.handleSaveFile(event);
+
+    // Get the updated list of files on the server.
+    fetch("http://localhost:9000/")
+      .then((res) => res.text())
+      .then((res) => this.arrageFileNamesRecivedFromServer(res));
+  };
+
+  //previously called handleChoosefile.
+  getFileFromServer = (filename) => {
+    var fileName = filename; //eventArgs.currentTarget.innerHTML.trim();
+    if (!fileName.endsWith(".txt")) {
+      var request = "http://localhost:9000/openConfigurationFile/" + fileName;
+      fetch(request)
+        .then((res) => res.text())
+        .then((res) => this.setCurrentConfigurationFile(res));
+    } else {
+      var request = "http://localhost:9000/openFile/" + fileName;
+      fetch(request)
+        .then((res) => res.text())
+        .then((res) => this.setCurrentTextFile(res));
+    }
+  };
+
+  // Recognise the text the user Highlights, and the text segments that
+  // comes before and after the Highlighted text.
   captureHighlightedText = (event, data) => {
     if (window.getSelection() == NaN) {
       return;
@@ -309,6 +379,10 @@ class Main extends Component {
     this.setState({ postHighlightedText: postTag });
   };
 
+  // When a user Highlights text segment and choose to tag that segment,
+  // this function is called.
+  // Tthe funtion update the whole text so the highlight segment will be
+  // serroiunded by a tag.
   addTag = (event, data) => {
     let tagName = window.getSelection().anchorNode.parentElement.id;
     let text;
@@ -334,6 +408,8 @@ class Main extends Component {
     this.setState({ fileContentClean: text });
   };
 
+  // This funtiuos reads the clean text (with the tags), and turns it to the
+  // form which the text is representd to the user.
   setTags = () => {
     let text = this.state.fileContentClean;
     let higlight = "<[^<]+>";
@@ -421,60 +497,158 @@ class Main extends Component {
     this.setState({ fileContent: taggedText });
   };
 
-  loadFile = (event) => {
-    this.state.fileContent = event.target.result;
-    this.state.fileContentClean = event.target.result;
-    this.handleSaveFile(event);
-    fetch("http://localhost:9000/")
-      .then((res) => res.text())
-      .then((res) => this.arrageFileNamesRecivedFromServer(res));
-    //  this.fileContent = "";
-    //  this.fileContentClean = "";
-    //this.setState({ fileContent: event.target.result });
-    //this.setState({ fileContentClean: event.target.result });
-    //this.setTags();
+  isSpecialChar = (character) => {
+    let charArray = [" ", "\n", "\t", ".", ","];
+    for (let i = 0; i < charArray.length; i++) {
+      if (charArray[i] == character) {
+        return true;
+      }
+    }
+    return false;
   };
 
-  // highlightText = () => {
-  //   let textHolder = this.fileContentClean;
-  //   this.setState({
-  //     fileContent: this.getHighlightedText(textHolder, this.state.tagbox)
-  //   });
-  // };
+  // Render the frame of the site and get the cueent page from the method this.returnPageLayout()
+  render() {
+    return (
+      <React.Fragment>
+        <div
+          align="center"
+          style={{
+            backgroundImage: `url(${Background})`,
+            height: "100vh",
+          }}
+        >
+          <br></br>
+          <br></br>
 
-  //handleChange = event => {
-  //  this.setState({ tagbox: event.target.value });
-  //};
+          {this.returnPageLayout()}
+        </div>
+      </React.Fragment>
+    );
+  }
 
-  //getHighlightedText = (data, mark) => {
-  //  //console.log(this);
-  //  let text = data;
-  //  let higlight = mark; //this.state.tagbox;
-  //  // Split on higlight term and include term into parts, ignore case
-  //  let parts = text.split(new RegExp(`(${higlight})`, "gi"));
-  //  let taggedText = (
-  //    <div>
-  //      {" "}
-  //      {parts.map((part, i) => (
-  //        <span
-  //          key={i}
-  //          id={i}
-  //          style={
-  //            part.toLowerCase() === higlight.toLowerCase()
-  //              ? {
-  //                  fontWeight: "bold",
-  //                  backgroundColor: this.state.tagbox[part]
-  //                }
-  //              : {}
-  //          }
-  //        >
-  //          {part}
-  //        </span>
-  //      ))}{" "}
-  //    </div>
-  //  );
-  //  return taggedText;
-  //};
+  // Returns the current page the web sites has to present.
+  returnPageLayout = () => {
+    if (this.state.pageLayout == "choose") {
+      return this.returnMainMenuLayout();
+    } else if (this.state.pageLayout == "edit") {
+      return this.returnEditFileLayout();
+    }
+  };
+
+  // Returns the page
+  returnMainMenuLayout = () => {
+    let page = (
+      <div>
+        <h1>
+          {" "}
+          <b>Welcome to Tags Manager</b>{" "}
+        </h1>
+        <br></br>
+        <h5>
+          Choose article and choose configutation file or upload new article
+          from local computer:
+        </h5>
+        <br></br>
+        <table>
+          <tr>
+            <td> Choose an article: </td>
+            <td>
+              <select name="fileChoser" id="fileChoser">
+                {" "}
+                {this.createList(this.state.filesList)}
+              </select>{" "}
+            </td>
+          </tr>
+          <tr>
+            <td>Choose a configuration file: </td>
+            <td>
+              <select name="conffileChoser" id="conffileChoser">
+                {this.createList(this.state.confFileList)}{" "}
+              </select>
+            </td>
+          </tr>
+          <tr>
+            <td align="center" colspan="2">
+              <br></br>
+              <button onClick={this.handleClickLoadFiles}> Load files</button>
+            </td>
+            <td> </td>
+          </tr>
+        </table>
+        <br></br>
+        <p>
+          Upload New File to Server
+          <input
+            type="file"
+            id="text_file"
+            onChange={this.handleClickOnUpload}
+          ></input>
+        </p>
+      </div>
+    );
+    return page;
+  };
+
+  returnEditFileLayout = () => {
+    let page = (
+      <div>
+        <h2>
+          {" "}
+          <b>
+            Add or Remove Tags by Highlighting or Right Clicking the Text
+          </b>{" "}
+        </h2>
+        <br></br>
+        <h5> Choosen Article: {this.state.filename}</h5>
+        <h5> Choosen Configuration File: {this.state.conffilename}</h5>
+        <br></br>
+        <table length="100%">
+          <tr length="100%">
+            <td length="25%"> </td>
+            <td length="50%">
+              {" "}
+              <ContextMenuTrigger id="some_unique_identifier">
+                <div
+                  id="text"
+                  onClickCapture={this.captureHighlightedText}
+                  style={{ backgroundColor: "white" }}
+                >
+                  {this.state.fileContent}
+                </div>{" "}
+              </ContextMenuTrigger>
+              <ContextMenu id="some_unique_identifier">
+                {this.createMenu()}
+              </ContextMenu>
+            </td>
+            <td length="25%"> </td>
+          </tr>
+        </table>
+        <br></br>
+        <p>
+          <button onClick={this.handleSaveFile}> Save Work on System</button>
+          {"     "}
+          <button onClick={this.handleStatisticsFile}>
+            Create Statistics File
+          </button>
+          {"    "}
+          <button onClick={this.handleClickRetrunToMainMenu}>
+            {" "}
+            Return to Main Menu
+          </button>
+        </p>
+      </div>
+    );
+    return page;
+  };
+
+  // Creates a menu that appears when the user press the right click.
+  // Creates only the menu items and not the menu itself.
+  // The menu created depends on the value of this.state.isHighlightedTextTagged
+  // that dends on the valye of this.state.highlightedText
+  // If the highlighted text is not serrounded by a tag, the menu contains
+  // all the tags avaliable, and if not, the menu contains only the option
+  // "remove tag:.
   createMenu = () => {
     let menu;
     if (this.state.isHighlightedTextTagged == false) {
@@ -499,237 +673,16 @@ class Main extends Component {
     return menu;
   };
 
+  // Gets a list of string and make a drop down option list of them.
+  // Creates only the list of the drop down list <option>
+  // and not the <select> drop down list itself.
   createList = (list) => {
     return list.map((part, i) => <option value={part}> {part}</option>);
   };
-
-  returnPageLayout = () => {
-    let page = "";
-    if (this.state.pageLayout == "choose") {
-      page = (
-        <div>
-          <h1>
-            {" "}
-            <b>Welcome to Tags Manager</b>{" "}
-          </h1>
-          <br></br>
-          <h5>
-            Choose article and choose configutation file or upload new article
-            from local computer:
-          </h5>
-          <br></br>
-          <table>
-            <tr>
-              <td> Choose an article: </td>
-              <td>
-                <select name="fileChoser" id="fileChoser">
-                  {" "}
-                  {this.createList(this.state.filesList)}
-                </select>{" "}
-              </td>
-            </tr>
-            <tr>
-              <td>Choose a configuration file: </td>
-              <td>
-                <select name="conffileChoser" id="conffileChoser">
-                  {this.createList(this.state.confFileList)}{" "}
-                </select>
-              </td>
-            </tr>
-            <tr>
-              <td align="center" colspan="2">
-                <br></br>
-                <button onClick={this.loadDataAndConfFiles}> Load files</button>
-              </td>
-              <td> </td>
-            </tr>
-          </table>
-          <br></br>
-          <p>
-            Upload New File to Server
-            <input
-              type="file"
-              id="text_file"
-              onChange={this.handleClickOnUpload}
-            ></input>
-          </p>
-        </div>
-      );
-    } else {
-      page = (
-        <div>
-          <h2>
-            {" "}
-            <b>
-              Add or Remove Tags by Highlighting or Right Clicking the Text
-            </b>{" "}
-          </h2>
-          <br></br>
-          <h5> Choosen Article: {this.state.filename}</h5>
-          <h5> Choosen Configuration File: {this.state.conffilename}</h5>
-          <br></br>
-          <table length="100%">
-            <tr length="100%">
-              <td length="25%"> </td>
-              <td length="50%">
-                {" "}
-                <ContextMenuTrigger id="some_unique_identifier">
-                  <div
-                    id="text"
-                    onClickCapture={this.captureHighlightedText}
-                    style={{ backgroundColor: "white" }}
-                  >
-                    {this.state.fileContent}
-                  </div>{" "}
-                </ContextMenuTrigger>
-                <ContextMenu id="some_unique_identifier">
-                  {this.createMenu()}
-                </ContextMenu>
-              </td>
-              <td length="25%"> </td>
-            </tr>
-          </table>
-          <br></br>
-          <p>
-            <button onClick={this.handleSaveFile}> Save Work on System</button>
-            {"     "}
-            <button onClick={this.handleStatisticsFile}>
-              Create Statistics File
-            </button>
-            {"    "}
-            <button onClick={this.retrunToChooseFile}>
-              {" "}
-              Return to Main Menu
-            </button>
-          </p>
-        </div>
-      );
-    }
-    return page;
-  };
-  loadDataAndConfFiles = (eventArgs) => {
-    var textFile = document.getElementById("fileChoser");
-    textFile = textFile.value;
-    this.handleChoosefile(textFile);
-    var confFile = document.getElementById("conffileChoser");
-    confFile = confFile.value;
-    this.handleChoosefile(confFile);
-    this.setState({ pageLayout: "edit" });
-  };
-
-  handleChoosefile = (filename) => {
-    var fileName = filename; //eventArgs.currentTarget.innerHTML.trim();
-    if (!fileName.endsWith(".txt")) {
-      var request = "http://localhost:9000/openConfigurationFile/" + fileName;
-      fetch(request)
-        .then((res) => res.text())
-        .then((res) => this.acceptConfigurationFilesFromServer(res));
-    } else {
-      var request = "http://localhost:9000/openFile/" + fileName;
-      fetch(request)
-        .then((res) => res.text())
-        .then((res) => this.acceptFilesFromServer(res));
-    }
-  };
-
-  handleStatisticsFile = (eventArgs) => {
-    let address = "http://localhost:9000/makeReport";
-
-    fetch(address, {
-      method: "POST",
-      headers: { "Content-type": "application/json" },
-      body: JSON.stringify({
-        data: this.state.fileContentClean,
-        filename: this.state.filename,
-        confData: this.state.configurationFileContentClean,
-        confFileName: this.state.conffilename,
-      }),
-    }).then(function (response) {
-      let answer = response.body.getReader();
-      console.log();
-    });
-  };
-
-  handleSaveFile = (eventArgs) => {
-    let request = this.state.filename + "\n" + this.state.fileContentClean;
-    let address = "http://localhost:9000/saveFile";
-
-    fetch(address, {
-      method: "POST",
-      headers: { "Content-type": "application/json" },
-      body: JSON.stringify({
-        data: this.state.fileContentClean,
-        filename: this.state.filename,
-      }),
-    }).then(function (response) {
-      let answer = response.body.getReader();
-      console.log();
-    });
-    //.then(function (response) {
-    //console.log(response);
-    //});
-  };
-
-  acceptFilesFromServer = (text) => {
-    let filename = text.split("\n", 2);
-    //first chunk of text is the name
-    this.setState({ filename: filename[0] });
-    //the rest of the text
-    this.setState({ fileContent: filename[1] });
-    this.setState({ fileContentClean: filename[1] });
-    this.setTags();
-    //note
-  };
-
-  acceptConfigurationFilesFromServer = (text) => {
-    let filename = text.split("\n");
-    this.setState({ conffilename: filename[0] });
-    let conFileContent = filename.slice(1, filename.length);
-    this.state.configurationFileContentClean = conFileContent;
-    let newTags = {}; //person: "yellow", place: "red", bla: "lightpink", period: "green"};
-
-    // Helps to create the context menu.
-    let tagslist = [];
-
-    for (let i = 0; i < conFileContent.length; i++) {
-      let currentPair = conFileContent[i].split(":");
-      tagslist.push(currentPair[0]);
-      let pairKey = currentPair[0];
-      let pairValue = currentPair[1];
-      newTags[pairKey] = pairValue;
-    }
-
-    this.state.tags = newTags;
-    this.state.tagsList = tagslist;
-    this.setTags();
-    // Initiate setState so the view will update.
-    this.setState({ tags: newTags });
-  };
-
-  retrunToChooseFile = (eventArgs) => {
-    this.setState({ pageLayout: "choose" });
-  };
-  render() {
-    return (
-      <React.Fragment>
-        <div
-          align="center"
-          style={{
-            backgroundImage: `url(${Background})`,
-            height: "100vh",
-          }}
-        >
-          <br></br>
-          <br></br>
-
-          {this.returnPageLayout()}
-        </div>
-      </React.Fragment>
-    );
-  }
 }
 export default Main;
 
+// UI before sepsration to pages.
 //<div
 //align="center"
 //style={{ backgroundImage: `url(${Background})`, height: "100vh" }}
@@ -766,7 +719,7 @@ export default Main;
 //    </tr>
 //    <tr>
 //      <td align="center" colspan="2">
-//        <button onClick={this.loadDataAndConfFiles}>
+//        <button onClick={this.handleClickLoadFiles}>
 //          {" "}
 //          Load files
 //        </button>
@@ -840,3 +793,91 @@ export default Main;
           </p>
            */
 //onDoubleClickCapture={this.captureHighlightedText}
+
+// loadConfiguration = () => {
+//   if (window.File && window.FileReader && window.FileList && window.Blob) {
+//    var preview = document.getElementById("temporaryPlace");
+//   var file = document.querySelector("input[id=config_file]").files[0];
+//   var reader = new FileReader();
+//   var textHolder = "File Content hasnot set";
+
+//  var textFile = /text.*/;
+//  if (file.type.match(textFile)) {
+//   reader.onload = this.tagsConvert;
+// } else {
+//  preview.innerHTML =
+//   "<span class='error'>It doesn't seem to be a text file!</span>";
+// }
+// reader.readAsText(file);
+//} else {
+//  alert("Your browser is too old to support HTML5 File API");
+// }
+// };
+//if (file.type.match(textFile)) {
+//  reader.onload = function(event) {
+//    preview.innerHTML = event.target.result;
+//    //this.setState({ fileContent: event.target.result });
+//  };
+//}
+// tagsConvert = (eventTags) => {
+// let conFileContent = eventTags.target.result;
+// let newTags = {}; //person: "yellow", place: "red", bla: "lightpink", period: "green"};
+// Helps to create the context menu.
+// let tagslist = [];
+
+//let lines = conFileContent.split("\n");
+//for (let i = 0; i < lines.length; i++) {
+//  let currentPair = lines[i].split(":");
+//  tagslist.push(currentPair[0]);
+//  let pairKey = currentPair[0];
+//  let pairValue = currentPair[1];
+//  newTags[pairKey] = pairValue;
+//}
+
+//this.state.tags = newTags;
+//this.state.tagsList = tagslist;
+//this.setTags();
+// Initiate setState so the view will update.
+//this.setState({ tags: newTags });
+//};
+
+// highlightText = () => {
+//   let textHolder = this.fileContentClean;
+//   this.setState({
+//     fileContent: this.getHighlightedText(textHolder, this.state.tagbox)
+//   });
+// };
+
+//handleChange = event => {
+//  this.setState({ tagbox: event.target.value });
+//};
+
+//getHighlightedText = (data, mark) => {
+//  //console.log(this);
+//  let text = data;
+//  let higlight = mark; //this.state.tagbox;
+//  // Split on higlight term and include term into parts, ignore case
+//  let parts = text.split(new RegExp(`(${higlight})`, "gi"));
+//  let taggedText = (
+//    <div>
+//      {" "}
+//      {parts.map((part, i) => (
+//        <span
+//          key={i}
+//          id={i}
+//          style={
+//            part.toLowerCase() === higlight.toLowerCase()
+//              ? {
+//                  fontWeight: "bold",
+//                  backgroundColor: this.state.tagbox[part]
+//                }
+//              : {}
+//          }
+//        >
+//          {part}
+//        </span>
+//      ))}{" "}
+//    </div>
+//  );
+//  return taggedText;
+//};
