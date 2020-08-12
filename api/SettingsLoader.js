@@ -6,6 +6,8 @@ class SettingsLoader {
     this.appRootFolder = "";
     this.articlesFolder = "";
     this.confFileFolder = "";
+    this.statisticsFolder = "";
+    this.cleanFilesFolder = "";
 
     this.getRootFolder();
     //readFile
@@ -37,6 +39,8 @@ class SettingsLoader {
     this.appRootFolder = dictSettings["appRootFolder"];
     this.articlesFolder = dictSettings["articlesFolder"];
     this.confFileFolder = dictSettings["confFileFolder"];
+    this.cleanFilesFolder = dictSettings["cleanFilesFolder"];
+    this.statisticsFolder = dictSettings["statisticsFolder"];
   };
 
   getRootFolder() {
@@ -49,6 +53,14 @@ class SettingsLoader {
 
   getConfigurationsFolder() {
     return this.confFileFolder;
+  }
+
+  getCleanFilesFolder() {
+    return this.cleanFilesFolder;
+  }
+
+  getstatisticsFolder() {
+    return this.statisticsFolder;
   }
 }
 module.exports = SettingsLoader;

@@ -7,8 +7,6 @@ var conf = new confLoader();
 router.post("/", function (req, res, next) {
   var data = "New File Contents";
   data = req.body.data;
-  //"C:\\Users\\Yifat\\finalProject\\files\\articles\\"
-  //"C:\\Users\\Sapir\\Documents\\GitHub\\finalProject\\files\\articles\\"
 
   var filename =
     conf.getRootFolder() +

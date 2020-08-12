@@ -2,3 +2,5 @@
 appRootFolder=C:\\Users\\Yifat\\finalProject\\files
 articlesFolder=articles
 confFileFolder=configuration
+statisticsFolder=statistics
+cleanFilesFolder=clean_files
