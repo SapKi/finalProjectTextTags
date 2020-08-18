@@ -11,7 +11,6 @@ router.get("/", function (req, res, next) {
   async function getFilesInDirectoty(path) {
     var strArticles = "";
     var conpath = path + "\\" + conf.getArticlesFolder();
-    console.log(conpath);
     const dirArticlies = await fs.promises.opendir(conpath);
     for await (const dirent of dirArticlies) {
       if (strArticles != "") {
