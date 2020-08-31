@@ -124,8 +124,8 @@ function makeXML(filename, conffilename, dicttags) {
   xml += "<statistic file>\n";
   tab++;
   tabString = getTabString(tab);
-  xml += tabString + "<file-name> " + filename + " <file-name>\n";
-  xml += tabString + "<conffile-name> " + conffilename + " <conffile-name>\n";
+  xml += tabString + "<file-name> " + filename + " </file-name>\n";
+  xml += tabString + "<conffile-name> " + conffilename + " </conffile-name>\n";
 
   let tags = Object.keys(dicttags);
 
@@ -144,8 +144,11 @@ function makeXML(filename, conffilename, dicttags) {
 
       let apeariences = dicttags[tags[i]][taggedTexts[j]];
       for (let k = 0; k < apeariences.length; k++) {
-        xml +=
-          tabString + "<appearience> " + apeariences[k] + " </appearience>\n";
+        // xml += tabString + "<location> " + apeariences[k] + " </location>\n";
+
+        apeariences = apeariences.split(" ");
+        xml += "\t" + tabString + "<line>" + apeariences[1] + "</line>";
+        xml += "\t" + tabString + "<column>" + apeariences[3] + "</column>";
       }
 
       tab--;
