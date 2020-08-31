@@ -36,6 +36,7 @@ class Main extends Component {
     isHighlightedTextTagged: false,
     apiResponse: "",
     pageLayout: "choose",
+    actions: ["clean file", "tagged file", "report"],
   };
 
   callAPI() {
@@ -129,6 +130,10 @@ class Main extends Component {
       let answer = response.body.getReader();
       console.log();
     });
+    //    var message = new Notification("RandomString");
+    //    message.onclick = function () {
+    //      alert("Random Message");
+    //    };
     //.then(function (response) {
     //console.log(response);
     //});
@@ -138,6 +143,48 @@ class Main extends Component {
   handleClickRetrunToMainMenu = (eventArgs) => {
     this.setState({ pageLayout: "choose" });
   };
+
+  handleClickOnDownload = (eventArgs) => {
+    var action = document.getElementById("actionChooser");
+    action = action.value;
+    var filename = document.getElementById("fileToDownloadChooser");
+    filename = filename.value;
+    var conffilename = document.getElementById("conffileToDownloadChooser");
+    conffilename = conffilename.value;
+
+    let address = "http://localhost:9000/downloadfile";
+    fetch(address, {
+      method: "POST",
+      headers: { "Content-type": "application/json" },
+      body: JSON.stringify({
+        action: action,
+        filename: filename,
+        confFileName: conffilename,
+      }),
+    }).then((response) => {
+      response.blob().then((blob) => {
+        let url = window.URL.createObjectURL(blob);
+        let a = document.createElement("a");
+        a.href = url;
+        a.download = action + "_" + filename;
+        a.click();
+      });
+    });
+  };
+
+  //  downloadEmployeeData = () => {
+  //    fetch('http://localhost:8080/employees/download')
+  //      .then(response => {
+  //        response.blob().then(blob => {
+  //          let url = window.URL.createObjectURL(blob);
+  //          let a = document.createElement('a');
+  //          a.href = url;
+  //          a.download = 'employees.json';
+  //          a.click();
+  //        });
+  //        //window.location.href = response.url;
+  //    });
+  //  }
 
   // previously called acceptFilesFromServer
   setCurrentTextFile = (text) => {
@@ -579,11 +626,32 @@ class Main extends Component {
         <br></br>
         <p>
           Upload New File to Server
+          <br></br>
           <input
             type="file"
             id="text_file"
             onChange={this.handleClickOnUpload}
           ></input>
+        </p>
+        <p>
+          Download file
+          <br></br>
+          <select name="actionChooser" id="actionChooser">
+            {" "}
+            {this.createList(this.state.actions)}
+          </select>{" "}
+          <select name="fileToDownloadChooser" id="fileToDownloadChooser">
+            {" "}
+            {this.createList(this.state.filesList)}
+          </select>{" "}
+          <select
+            name="conffileToDownloadChooser"
+            id="conffileToDownloadChooser"
+          >
+            {this.createList(this.state.confFileList)}{" "}
+          </select>
+          {"  "}
+          <button onClick={this.handleClickOnDownload}> Download file </button>
         </p>
       </div>
     );

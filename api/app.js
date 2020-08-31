@@ -11,6 +11,8 @@ var openFileRouter = require("./routes/openFile");
 var saveFileRouter = require("./routes/saveFile");
 var openConfigurationRouter = require("./routes/openConfigurationFile");
 var makeReportRouter = require("./routes/makeReport");
+var downloadfileRouter = require("./routes/downloadfile");
+//downloadfile
 var app = express();
 
 // General data of the aplication
@@ -34,6 +36,7 @@ app.use("/openFile", openFileRouter);
 app.use("/saveFile", saveFileRouter);
 app.use("/openConfigurationFile", openConfigurationRouter);
 app.use("/makeReport", makeReportRouter);
+app.use("/downloadfile", downloadfileRouter);
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
   next(createError(404));
