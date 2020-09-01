@@ -1,11 +1,6 @@
-appRootFolder=C:\\Users\\Sapir\\Documents\\GitHub\\finalProject\\files
-//appRootFolder=C:\\Users\\Yifat\\finalProject\\files
+//appRootFolder=C:\\Users\\Sapir\\Documents\\GitHub\\finalProject\\files
+appRootFolder=C:\\Users\\Yifat\\finalProject\\files
 articlesFolder=articles
 confFileFolder=configuration
-<<<<<<< HEAD
-
-
-=======
-statisticsFolder=statistics
 cleanFilesFolder=clean_files
->>>>>>> 98ec97851ac919472232b6d31ff04d725a642c9a
+statisticsFolder=statistics

@@ -3,23 +3,32 @@ import Background from "../images/Jerusalem1.png";
 import { ContextMenu, MenuItem, ContextMenuTrigger } from "react-contextmenu";
 import ReactDOM from "react-dom";
 import { throwStatement } from "@babel/types";
+//display: "none",
+//  fontFamily: "Guttman Hatzvi",
+//  width: "auto",
+//  height: "25cm",
+//  overflow: "scroll",
+//  fontSize: "medium",
 
 const divStyle = {
-  display: "none",
+  color: "#800a0e",
+  fontSize: "medium",
   fontFamily: "Guttman Hatzvi",
   width: "auto",
-  height: "25cm",
+  height: "15cm",
   overflow: "scroll",
-  fontSize: "medium",
+  backgroundImage: `url(${Background})`,
 };
-
+// backgroundSize: "100%",
 class Main extends Component {
   state = {
     filename: "",
     conffilename: "",
     fileContent: "",
     fileContentClean: "",
-    tagbox: "Enter text to mark",
+    fileToUploadName: "",
+    fileToUploadContent: "",
+    newlyUploadedFileName: "",
     formattedparts: "",
     tags: {
       //person: "yellow",
@@ -74,20 +83,17 @@ class Main extends Component {
 
   handleClickOnUpload = (event) => {
     if (window.File && window.FileReader && window.FileList && window.Blob) {
-      var preview = document.getElementById("temporaryPlace");
+      // var preview = document.getElementById("temporaryPlace");
       var file = document.querySelector("input[id=text_file]").files[0];
       var reader = new FileReader();
       var textFile = /text.*/;
 
       var namefile = event.target.value;
       namefile = namefile.split("\\");
-      this.state.filename = namefile[namefile.length - 1];
+      this.state.fileToUploadName = namefile[namefile.length - 1];
 
       if (file.type.match(textFile)) {
         reader.onload = this.uploadFileToServer;
-      } else {
-        preview.innerHTML =
-          "<span class='error'>It doesn't seem to be a text file!</span>";
       }
       reader.readAsText(file);
     } else {
@@ -128,12 +134,26 @@ class Main extends Component {
     let request = this.state.filename + "\n" + this.state.fileContentClean;
     let address = "http://localhost:9000/saveFile";
 
+    let fileTosaveData = "";
+    let fileTosaveName = "";
+
+    // If the the save is of a new file
+    if (this.state.fileToUploadContent != "") {
+      fileTosaveData = this.state.fileToUploadContent;
+      fileTosaveName = this.state.fileToUploadName;
+      this.state.fileToUploadContent = "";
+      this.state.fileToUploadName = "";
+    } else {
+      fileTosaveName = this.state.filename;
+      fileTosaveData = this.state.fileContentClean;
+    }
+
     fetch(address, {
       method: "POST",
       headers: { "Content-type": "application/json" },
       body: JSON.stringify({
-        data: this.state.fileContentClean,
-        filename: this.state.filename,
+        data: fileTosaveData,
+        filename: fileTosaveName,
       }),
     }).then(function (response) {
       let answer = response.body.getReader();
@@ -238,13 +258,28 @@ class Main extends Component {
   uploadFileToServer = (event) => {
     //this.state.fileContent = event.target.result;
     //this.state.fileContentClean = event.target.result;
+    // this.state.fileToUploadContent =
 
+    this.state.fileToUploadContent = event.target.result;
+    this.state.newlyUploadedFileName = this.state.fileToUploadName;
     this.handleSaveFile(event);
 
     // Get the updated list of files on the server.
     fetch("http://localhost:9000/")
       .then((res) => res.text())
-      .then((res) => this.arrageFileNamesRecivedFromServer(res));
+      .then((res) => this.arrageFileNamesRecivedFromServer(res))
+      .then(() => this.UpdateChosenFile());
+  };
+
+  UpdateChosenFile = (res) => {
+    // If the list of files sent from the server had the file was added to the server.
+    const exists = this.state.filesList.some(
+      (v) => v == this.state.newlyUploadedFileName
+    );
+    if (exists) {
+      var textFile = document.getElementById("fileChoser");
+      textFile.value = this.state.newlyUploadedFileName;
+    }
   };
 
   //previously called handleChoosefile.
@@ -567,16 +602,13 @@ class Main extends Component {
   render() {
     return (
       <React.Fragment>
-        <div
-          align="center"
-          style={{
-            backgroundImage: `url(${Background})`,
-            height: "100vh",
-          }}
-        >
+        <div align="center" style={divStyle}>
           <br></br>
           <br></br>
-
+          <h2>
+            {" "}
+            <b>Jerusalem Knowledge Center</b>{" "}
+          </h2>
           {this.returnPageLayout()}
         </div>
       </React.Fragment>
@@ -595,17 +627,18 @@ class Main extends Component {
   // Returns the page
   returnMainMenuLayout = () => {
     let page = (
-      <div style={divStyle}>
-        <h1>
-          {" "}
-          <b>Jerusalem Knowledge Center</b>{" "}
-        </h1>
+      <div>
         <br></br>
-        <h5>Tag Editor</h5>
+        <h1>
+          <b>Tag Editor</b>
+        </h1>
         <br></br>
         <table>
           <tr>
-            <td> 1. Select an existing document </td>
+            <td align="center">
+              {" "}
+              <b>1. Select an existing document</b>{" "}
+            </td>
             <td>
               <select name="fileChoser" id="fileChoser">
                 {" "}
@@ -614,7 +647,31 @@ class Main extends Component {
             </td>
           </tr>
           <tr>
-            <td>Choose a configuration file: </td>
+            <td align="center">
+              <b> -or- </b>{" "}
+            </td>
+            <td> </td>
+          </tr>
+          <tr>
+            <td align="center">
+              <b>
+                Upload New File to Server <br></br>{" "}
+              </b>
+            </td>
+            <td>
+              {" "}
+              <input
+                type="file"
+                id="text_file"
+                onChange={this.handleClickOnUpload}
+              ></input>
+            </td>
+          </tr>
+          <br></br>
+          <tr>
+            <td>
+              <b> 2. Choose a configuration file: </b>
+            </td>
             <td>
               <select name="conffileChoser" id="conffileChoser">
                 {this.createList(this.state.confFileList)}{" "}
@@ -631,16 +688,7 @@ class Main extends Component {
         </table>
         <br></br>
         <p>
-          Upload New File to Server
-          <br></br>
-          <input
-            type="file"
-            id="text_file"
-            onChange={this.handleClickOnUpload}
-          ></input>
-        </p>
-        <p>
-          Download file
+          <b>Download file</b>
           <br></br>
           <select name="actionChooser" id="actionChooser">
             {" "}
