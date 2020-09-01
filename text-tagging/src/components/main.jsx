@@ -41,6 +41,7 @@ class Main extends Component {
     tagsList: [],
     filesList: [],
     confFileList: [],
+    specialCharsList: [],
     // Context menu
     contextMenu: "",
     // Used to keep the text the user marked
@@ -77,8 +78,14 @@ class Main extends Component {
 
     // Seperates the configuration file names.
     let confFiles = files[1].split(",");
+
+    // Seperate the spacial chars the marker will egnore.
+    let spacialChars = files[2].split(" ");
+    spacialChars.push(" ");
+
     this.setState({ filesList: textFiles });
     this.setState({ confFileList: confFiles });
+    this.setState({ specialCharsList: spacialChars });
   };
 
   handleClickOnUpload = (event) => {
@@ -146,6 +153,7 @@ class Main extends Component {
     } else {
       fileTosaveName = this.state.filename;
       fileTosaveData = this.state.fileContentClean;
+      this.handleStatisticsFile("");
     }
 
     fetch(address, {
@@ -589,9 +597,8 @@ class Main extends Component {
   };
 
   isSpecialChar = (character) => {
-    let charArray = [" ", "\n", "\t", ".", ","];
-    for (let i = 0; i < charArray.length; i++) {
-      if (charArray[i] == character) {
+    for (let i = 0; i < this.state.specialCharsList.length; i++) {
+      if (this.state.specialCharsList[i] == character) {
         return true;
       }
     }
@@ -758,10 +765,6 @@ class Main extends Component {
         <p>
           <button onClick={this.handleSaveFile}> Save Work on System</button>
           {"     "}
-          <button onClick={this.handleStatisticsFile}>
-            Create Statistics File
-          </button>
-          {"    "}
           <button onClick={this.handleClickRetrunToMainMenu}>
             {" "}
             Return to Main Menu

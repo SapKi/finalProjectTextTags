@@ -146,9 +146,9 @@ function makeXML(filename, conffilename, dicttags) {
       for (let k = 0; k < apeariences.length; k++) {
         // xml += tabString + "<location> " + apeariences[k] + " </location>\n";
 
-        apeariences = apeariences.split(" ");
-        xml += "\t" + tabString + "<line>" + apeariences[1] + "</line>";
-        xml += "\t" + tabString + "<column>" + apeariences[3] + "</column>";
+        lineandcol = apeariences[k].split(" ");
+        xml += tabString + "<line>" + lineandcol[1] + "</line>\n";
+        xml += tabString + "<column>" + lineandcol[3] + "</column>\n";
       }
 
       tab--;

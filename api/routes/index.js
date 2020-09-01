@@ -31,7 +31,7 @@ router.get("/", function (req, res, next) {
         strConfig = dirent.name;
       }
     }
-    res.send(strArticles + "\n" + strConfig);
+    res.send(strArticles + "\n" + strConfig + "\n" + conf.getSpecialChars());
   }
   //"C:\\Users\\Yifat\\finalProject\\files"
   //"C:\\Users\\Sapir\\Documents\\GitHub\\finalProject\\files"
