@@ -1,8 +1,17 @@
 import React, { Component } from "react";
-import Background from "../images/sandbackground1.png";
+import Background from "../images/Jerusalem1.png";
 import { ContextMenu, MenuItem, ContextMenuTrigger } from "react-contextmenu";
 import ReactDOM from "react-dom";
 import { throwStatement } from "@babel/types";
+
+const divStyle = {
+  display: "none",
+  fontFamily: "Guttman Hatzvi",
+  width: "auto",
+  height: "25cm",
+  overflow: "scroll",
+  fontSize: "medium",
+};
 
 class Main extends Component {
   state = {
@@ -586,20 +595,17 @@ class Main extends Component {
   // Returns the page
   returnMainMenuLayout = () => {
     let page = (
-      <div>
+      <div style={divStyle}>
         <h1>
           {" "}
-          <b>Welcome to Tags Manager</b>{" "}
+          <b>Jerusalem Knowledge Center</b>{" "}
         </h1>
         <br></br>
-        <h5>
-          Choose article and choose configutation file or upload new article
-          from local computer:
-        </h5>
+        <h5>Tag Editor</h5>
         <br></br>
         <table>
           <tr>
-            <td> Choose an article: </td>
+            <td> 1. Select an existing document </td>
             <td>
               <select name="fileChoser" id="fileChoser">
                 {" "}
