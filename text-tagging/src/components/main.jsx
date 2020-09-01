@@ -57,6 +57,7 @@ class Main extends Component {
     //    begining: -1,
     //    end: -1,
     isHighlightedTextTagged: false,
+    isUpTodate: true,
     apiResponse: "",
     pageLayout: "choose",
     actions: ["clean file", "tagged file", "report"],
@@ -86,6 +87,8 @@ class Main extends Component {
     // Seperate the spacial chars the marker will egnore.
     let spacialChars = files[2].split(" ");
     spacialChars.push(" ");
+    spacialChars.push("\n");
+    spacialChars.push("\r");
 
     this.setState({ filesList: textFiles });
     this.setState({ confFileList: confFiles });
@@ -171,6 +174,8 @@ class Main extends Component {
       let answer = response.body.getReader();
       console.log();
     });
+    this.isUpTodate = true;
+
     //    var message = new Notification("RandomString");
     //    message.onclick = function () {
     //      alert("Random Message");
@@ -182,7 +187,12 @@ class Main extends Component {
 
   // retrunToChooseFile
   handleClickRetrunToMainMenu = (eventArgs) => {
-    this.setState({ pageLayout: "choose" });
+    if (!this.isUpTodate) {
+      this.handleClick1(eventArgs);
+    } else {
+      this.setState({ pageLayout: "choose" });
+    }
+    this.isUpTodate = true;
   };
 
   handleClickOnDownload = (eventArgs) => {
@@ -316,6 +326,8 @@ class Main extends Component {
     if (window.getSelection() == NaN) {
       return;
     }
+    this.isUpTodate = false;
+
     // The text is seperated to parts.
     // Get the index of the highlited text in his part.
     let leftIndexOfHighlightedChunkAtHisSpan;
@@ -601,6 +613,9 @@ class Main extends Component {
   };
 
   isSpecialChar = (character) => {
+    if (character == "\n") {
+      let i = 0;
+    }
     for (let i = 0; i < this.state.specialCharsList.length; i++) {
       if (this.state.specialCharsList[i] == character) {
         return true;
@@ -613,7 +628,7 @@ class Main extends Component {
   handleClick1(e) {
     e.preventDefault();
     Alert.info(
-      "Are you sure you want to return to Main Menu without saving changes?",
+      "Make sure to save your changes before returning to the Main Menu",
       {
         position: "top",
         timeout: "none",
@@ -797,9 +812,7 @@ class Main extends Component {
               href="#"
               onClick={this.handleClick1}
               onClose={this.handleOnClose}
-            >
-              Click 1
-            </a>
+            ></a>
           </div>
         </p>
       </div>
