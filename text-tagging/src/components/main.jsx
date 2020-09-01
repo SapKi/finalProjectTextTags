@@ -3,6 +3,10 @@ import Background from "../images/Jerusalem1.png";
 import { ContextMenu, MenuItem, ContextMenuTrigger } from "react-contextmenu";
 import ReactDOM from "react-dom";
 import { throwStatement } from "@babel/types";
+import "react-s-alert/dist/s-alert-default.css";
+import Alert from "react-s-alert";
+import "react-s-alert/dist/s-alert-default.css";
+import "react-s-alert/dist/s-alert-css-effects/slide.css";
 //display: "none",
 //  fontFamily: "Guttman Hatzvi",
 //  width: "auto",
@@ -598,6 +602,21 @@ class Main extends Component {
     return false;
   };
 
+  //alert capara
+  handleClick1(e) {
+    e.preventDefault();
+    Alert.info(
+      "Are you sure you want to return to Main Menu without saving changes?",
+      {
+        position: "top",
+        timeout: "none",
+        onClose: function () {
+          console.log("onClose Fired!");
+        },
+      }
+    );
+  }
+
   // Render the frame of the site and get the cueent page from the method this.returnPageLayout()
   render() {
     return (
@@ -613,6 +632,10 @@ class Main extends Component {
             <b>Tag Editor</b>
           </h1>
           {this.returnPageLayout()}
+          <div>
+            <span>{this.props.children}</span>
+            <Alert stack={{ limit: 3 }} />
+          </div>
         </div>
       </React.Fragment>
     );
@@ -766,6 +789,15 @@ class Main extends Component {
             {" "}
             Return to Main Menu
           </button>
+          <div>
+            <a
+              href="#"
+              onClick={this.handleClick1}
+              onClose={this.handleOnClose}
+            >
+              Click 1
+            </a>
+          </div>
         </p>
       </div>
     );
