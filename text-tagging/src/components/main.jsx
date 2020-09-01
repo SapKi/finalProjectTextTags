@@ -609,6 +609,9 @@ class Main extends Component {
             {" "}
             <b>Jerusalem Knowledge Center</b>{" "}
           </h2>
+          <h1>
+            <b>Tag Editor</b>
+          </h1>
           {this.returnPageLayout()}
         </div>
       </React.Fragment>
@@ -628,10 +631,6 @@ class Main extends Component {
   returnMainMenuLayout = () => {
     let page = (
       <div>
-        <br></br>
-        <h1>
-          <b>Tag Editor</b>
-        </h1>
         <br></br>
         <table>
           <tr>
@@ -715,16 +714,20 @@ class Main extends Component {
   returnEditFileLayout = () => {
     let page = (
       <div>
-        <h2>
+        <br></br>
+        <h3>
           {" "}
           <b>
-            Add or Remove Tags by Highlighting or Right Clicking the Text
-          </b>{" "}
+            Choosen Article: {this.state.filename} Choosen Configuration File:{" "}
+            {this.state.conffilename}
+          </b>
+        </h3>
+
+        <br></br>
+        <h2>
+          {" "}
+          <b>Add or edit tags by selecting and right clicking the text.</b>{" "}
         </h2>
-        <br></br>
-        <h5> Choosen Article: {this.state.filename}</h5>
-        <h5> Choosen Configuration File: {this.state.conffilename}</h5>
-        <br></br>
         <table length="100%">
           <tr length="100%">
             <td length="25%"> </td>
@@ -734,7 +737,12 @@ class Main extends Component {
                 <div
                   id="text"
                   onClickCapture={this.captureHighlightedText}
-                  style={{ backgroundColor: "white" }}
+                  style={{
+                    backgroundColor: "white",
+                    borderStyle: "solid",
+                    height: "15cm",
+                    width: "25cm",
+                  }}
                 >
                   {this.state.fileContent}
                 </div>{" "}
