@@ -1,5 +1,7 @@
 import React, { Component } from "react";
 import Background from "../images/Jerusalem1.png";
+import logo from "../images/logo.png";
+import biulogo from "../images/biulogo.png";
 import { ContextMenu, MenuItem, ContextMenuTrigger } from "react-contextmenu";
 import ReactDOM from "react-dom";
 import { throwStatement } from "@babel/types";
@@ -644,6 +646,13 @@ class Main extends Component {
     return (
       <React.Fragment>
         <div align="center" style={divStyle}>
+          <img
+            align="right"
+            src={biulogo}
+            alt="biulogo"
+            style={{ width: "auto", height: "0.75cm" }}
+          />
+          <img align="left" src={logo} alt="logo" />
           <br></br>
           <br></br>
           <h2>
@@ -751,6 +760,16 @@ class Main extends Component {
           {"  "}
           <button onClick={this.handleClickOnDownload}> Download file </button>
         </p>
+        <table>
+          <td align="left">
+            {" "}
+            <h6> Sapir Kikoz, Yifat Yankovich</h6>{" "}
+          </td>
+          <td align="right">
+            {" "}
+            <h6> September 2020 </h6>
+          </td>
+        </table>
       </div>
     );
     return page;
