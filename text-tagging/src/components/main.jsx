@@ -767,7 +767,6 @@ class Main extends Component {
           {"  "}
           <button onClick={this.handleClickOnDownload}> Download file </button>
         </p>
-<<<<<<< Updated upstream
         <table>
           <td align="left">
             {" "}
@@ -778,14 +777,6 @@ class Main extends Component {
             <h6> September 2020 </h6>
           </td>
         </table>
-=======
-        <div>
-          <button onClick={this.handleSaveHTML}>
-            {" "}
-            Download web page as HTML{" "}
-          </button>
-        </div>
->>>>>>> Stashed changes
       </div>
     );
     return page;
@@ -854,9 +845,6 @@ class Main extends Component {
     );
     return page;
   };
-
-
-  
 
   // Creates a menu that appears when the user press the right click.
   // Creates only the menu items and not the menu itself.
