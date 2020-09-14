@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import Background from "../images/Jerusalem1.png";
+import Background from "../images/backgroundabout.jpg";
 import logo from "../images/logo.png";
 import biulogo from "../images/biulogo.png";
 import { ContextMenu, MenuItem, ContextMenuTrigger } from "react-contextmenu";
@@ -17,12 +17,13 @@ import "react-s-alert/dist/s-alert-css-effects/slide.css";
 //  fontSize: "medium",
 
 const divStyle = {
-  color: "#800a0e",
+  color: "#5B6676",
   fontSize: "medium",
-  fontFamily: "Guttman Hatzvi",
+  fontFamily: "Arial",
   width: "auto",
   height: "15cm",
   overflow: "scroll",
+  background: "url(shutterstock_125995700.jpg)",
   backgroundImage: `url(${Background})`,
 };
 // backgroundSize: "100%",
@@ -763,7 +764,7 @@ class Main extends Component {
         <table>
           <td align="left">
             {" "}
-            <h6> Sapir Kikoz, Yifat Yankovich</h6>{" "}
+            <h6>© Sapir Kikoz, Yifat Yankovich</h6>{" "}
           </td>
           <td align="right">
             {" "}
