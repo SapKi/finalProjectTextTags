@@ -9,8 +9,6 @@ import "react-s-alert/dist/s-alert-default.css";
 import Alert from "react-s-alert";
 import "react-s-alert/dist/s-alert-default.css";
 import "react-s-alert/dist/s-alert-css-effects/slide.css";
-import ReactDOMServer from "react-dom/server";
-import App from "./index.js";
 //display: "none",
 //  fontFamily: "Guttman Hatzvi",
 //  width: "auto",
@@ -21,12 +19,11 @@ import App from "./index.js";
 const divStyle = {
   color: "#800a0e",
   fontSize: "medium",
-  fontFamily: "Arial",
-  position: "absolute",
+  fontFamily: "Guttman Hatzvi",
   width: "auto",
   height: "15cm",
   overflow: "scroll",
-  backgroundImage: `url(shutterstock_125995700.jpg)`,
+  backgroundImage: `url(${Background})`,
 };
 // backgroundSize: "100%",
 class Main extends Component {
@@ -198,10 +195,6 @@ class Main extends Component {
       this.setState({ pageLayout: "choose" });
     }
     this.isUpTodate = true;
-  };
-
-  handleSaveHTML = (eventArgs) => {
-    document.body.innerHTML = ReactDOMServer.renderToStaticMarkup(App);
   };
 
   handleClickOnDownload = (eventArgs) => {
@@ -1085,3 +1078,4 @@ export default Main;
 //  );
 //  return taggedText;
 //};
+//
