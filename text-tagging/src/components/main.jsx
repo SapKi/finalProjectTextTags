@@ -164,6 +164,7 @@ class Main extends Component {
       fileTosaveName = this.state.filename;
       fileTosaveData = this.state.fileContentClean;
       this.handleStatisticsFile("");
+      this.makeHtml();
     }
 
     fetch(address, {
@@ -178,7 +179,6 @@ class Main extends Component {
       console.log();
     });
 
-    this.makeHtml();
     this.isUpTodate = true;
 
     //    var message = new Notification("RandomString");
