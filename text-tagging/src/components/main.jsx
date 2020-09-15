@@ -63,7 +63,7 @@ class Main extends Component {
     isUpTodate: true,
     apiResponse: "",
     pageLayout: "choose",
-    actions: ["clean file", "tagged file", "report"],
+    actions: ["clean file", "tagged file", "report", "html"],
   };
 
   callAPI() {
@@ -177,6 +177,8 @@ class Main extends Component {
       let answer = response.body.getReader();
       console.log();
     });
+
+    this.makeHtml();
     this.isUpTodate = true;
 
     //    var message = new Notification("RandomString");
@@ -206,6 +208,11 @@ class Main extends Component {
     var conffilename = document.getElementById("conffileToDownloadChooser");
     conffilename = conffilename.value;
 
+    let downloadedFileName = action + "_" + filename;
+    if (action == "html") {
+      downloadedFileName = filename + ".html";
+    }
+
     let address = "http://localhost:9000/downloadfile";
     fetch(address, {
       method: "POST",
@@ -220,7 +227,7 @@ class Main extends Component {
         let url = window.URL.createObjectURL(blob);
         let a = document.createElement("a");
         a.href = url;
-        a.download = action + "_" + filename;
+        a.download = downloadedFileName;
         a.click();
       });
     });
@@ -294,6 +301,38 @@ class Main extends Component {
       .then((res) => res.text())
       .then((res) => this.arrageFileNamesRecivedFromServer(res))
       .then(() => this.UpdateChosenFile());
+  };
+
+  makeHtml = () => {
+    var textFile = document.getElementById("text");
+    textFile = textFile.innerHTML;
+    var htmlFile = "";
+    htmlFile += "<!DOCTYPE html>";
+    htmlFile += "<html>";
+    htmlFile += "<head>";
+    htmlFile += "<title>";
+    htmlFile += this.state.filename;
+    htmlFile += "</title>";
+    htmlFile += "</head>";
+    htmlFile += "<body>";
+    htmlFile += '<h3 align="center">';
+    htmlFile += textFile;
+    htmlFile += "</h3>";
+    htmlFile += "</body>";
+    htmlFile += "</html>";
+
+    let address = "http://localhost:9000/saveFile";
+    fetch(address, {
+      method: "POST",
+      headers: { "Content-type": "application/json" },
+      body: JSON.stringify({
+        data: htmlFile,
+        filename: this.state.filename + ".html",
+      }),
+    }).then(function (response) {
+      let answer = response.body.getReader();
+      console.log();
+    });
   };
 
   UpdateChosenFile = (res) => {

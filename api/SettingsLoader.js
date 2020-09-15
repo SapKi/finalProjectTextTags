@@ -9,6 +9,7 @@ class SettingsLoader {
     this.statisticsFolder = "";
     this.cleanFilesFolder = "";
     this.spacialCharacters = "";
+    this.htmlFolder = "";
 
     //readFile
     fs.readFile("./appSetting.txt", "utf-8", this.readConfigurationFile);
@@ -42,6 +43,7 @@ class SettingsLoader {
     this.cleanFilesFolder = dictSettings["cleanFilesFolder"];
     this.statisticsFolder = dictSettings["statisticsFolder"];
     this.spacialCharacters = dictSettings["spacialCharacters"];
+    this.htmlFolder = dictSettings["htmlsFolder"];
   };
 
   getRootFolder() {
@@ -62,6 +64,10 @@ class SettingsLoader {
 
   getstatisticsFolder() {
     return this.statisticsFolder;
+  }
+
+  getHtmlsFolder() {
+    return this.htmlFolder;
   }
 
   getSpecialChars() {

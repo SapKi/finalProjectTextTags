@@ -8,6 +8,7 @@ router.post("/", function (req, res, next) {
   let action = req.body.action;
   let filename = req.body.filename;
   let confFileName = req.body.confFileName;
+  let encoding = "utf16le";
 
   let filepath = conf.getRootFolder() + "\\";
   if (action == "clean file") {
@@ -19,9 +20,13 @@ router.post("/", function (req, res, next) {
   } else if (action == "report") {
     filepath += conf.getstatisticsFolder() + "\\";
     filepath += filename + "_" + confFileName + ".xml";
+  } else if (action == "html") {
+    filepath += conf.getHtmlsFolder() + "\\";
+    filepath += filename + ".html";
+    encoding = "utf-8";
   }
 
-  fs.readFile(filepath, "utf16le", function (err, data) {
+  fs.readFile(filepath, encoding, function (err, data) {
     console.log("filecontent = " + data);
     res.writeHead(200, { "Content-Type": "text/html" });
     res.write(data);
