@@ -844,7 +844,6 @@ class Main extends Component {
                   style={{
                     backgroundColor: "white",
                     borderStyle: "solid",
-                    height: "15cm",
                     width: "25cm",
                   }}
                 >
