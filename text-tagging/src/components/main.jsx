@@ -315,7 +315,7 @@ class Main extends Component {
     htmlFile += "</title>";
     htmlFile += "</head>";
     htmlFile += "<body>";
-    htmlFile += '<h3 align="center">';
+    htmlFile += "<h3>";
     htmlFile += textFile;
     htmlFile += "</h3>";
     htmlFile += "</body>";
