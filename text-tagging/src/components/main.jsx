@@ -15,16 +15,26 @@ import "react-s-alert/dist/s-alert-css-effects/slide.css";
 //  height: "25cm",
 //  overflow: "scroll",
 //  fontSize: "medium",
+//  overflowY: "scroll",
+//positionY: "absolute",
+//positionX: "absolute",
+//width: "auto",
+//height: "100%",
+//margin: "auto",
 
 const divStyle = {
   color: "#5B6676",
   fontSize: "medium",
   fontFamily: "Arial",
-  width: "auto",
-  height: "15cm",
-  overflow: "scroll",
+  backgroundSize: "contain",
+  overflowX: "hidden",
+  height: "100vh",
   background: "url(shutterstock_125995700.jpg)",
   backgroundImage: `url(${Background})`,
+};
+
+const buttonStyle = {
+  backgroundColor: "#74CDD1",
 };
 // backgroundSize: "100%",
 class Main extends Component {
@@ -126,6 +136,7 @@ class Main extends Component {
     var confFile = document.getElementById("conffileChoser");
     confFile = confFile.value;
     this.getFileFromServer(confFile);
+    this.state.isUpTodate = true;
     this.setState({ pageLayout: "edit" });
   };
 
@@ -179,7 +190,7 @@ class Main extends Component {
       console.log();
     });
 
-    this.isUpTodate = true;
+    this.state.isUpTodate = true;
 
     //    var message = new Notification("RandomString");
     //    message.onclick = function () {
@@ -192,12 +203,12 @@ class Main extends Component {
 
   // retrunToChooseFile
   handleClickRetrunToMainMenu = (eventArgs) => {
-    if (!this.isUpTodate) {
+    if (!this.state.isUpTodate) {
       this.handleClick1(eventArgs);
     } else {
       this.setState({ pageLayout: "choose" });
     }
-    this.isUpTodate = true;
+    this.state.isUpTodate = true;
   };
 
   handleClickOnDownload = (eventArgs) => {
@@ -368,7 +379,6 @@ class Main extends Component {
     if (window.getSelection() == NaN) {
       return;
     }
-    this.isUpTodate = false;
 
     // The text is seperated to parts.
     // Get the index of the highlited text in his part.
@@ -541,6 +551,7 @@ class Main extends Component {
   // Tthe funtion update the whole text so the highlight segment will be
   // serroiunded by a tag.
   addTag = (event, data) => {
+    this.state.isUpTodate = false;
     let tagName = window.getSelection().anchorNode.parentElement.id;
     let text;
     if (tagName != "no_tag") {
@@ -720,7 +731,6 @@ class Main extends Component {
       return this.returnEditFileLayout();
     }
   };
-
   // Returns the page
   returnMainMenuLayout = () => {
     let page = (
@@ -772,11 +782,14 @@ class Main extends Component {
             </td>
           </tr>
           <tr>
-            <td align="center" colspan="2">
-              <br></br>
-              <button onClick={this.handleClickLoadFiles}> Load files</button>
-            </td>
             <td> </td>
+            <td align="left">
+              <br></br>
+              <button style={buttonStyle} onClick={this.handleClickLoadFiles}>
+                {" "}
+                Load files
+              </button>
+            </td>
           </tr>
         </table>
         <br></br>
@@ -798,12 +811,18 @@ class Main extends Component {
             {this.createList(this.state.confFileList)}{" "}
           </select>
           {"  "}
-          <button onClick={this.handleClickOnDownload}> Download file </button>
+          <button style={buttonStyle} onClick={this.handleClickOnDownload}>
+            {" "}
+            Download file{" "}
+          </button>
         </p>
         <table>
           <td align="left">
             {" "}
-            <h6>© Sapir Kikoz, Yifat Yankovich</h6>{" "}
+            <h6>
+              {" "}
+              <b>© Sapir Kikoz, Yifat Yankovich - </b>
+            </h6>{" "}
           </td>
           <td align="right">
             {" "}
@@ -814,24 +833,24 @@ class Main extends Component {
     );
     return page;
   };
-
+  //colspan="2">
   returnEditFileLayout = () => {
     let page = (
       <div>
-        <br></br>
-        <h3>
+        <h6>
           {" "}
           <b>
-            Choosen Article: {this.state.filename} Choosen Configuration File:{" "}
-            {this.state.conffilename}
+            Choosen Article: {this.state.filename}
+            <br></br>
+            Choosen Configuration File: {this.state.conffilename}
           </b>
-        </h3>
+        </h6>
 
         <br></br>
-        <h2>
+        <h6>
           {" "}
           <b>Add or edit tags by selecting and right clicking the text.</b>{" "}
-        </h2>
+        </h6>
         <table length="100%">
           <tr length="100%">
             <td length="25%"> </td>
@@ -844,9 +863,10 @@ class Main extends Component {
                   style={{
                     backgroundColor: "white",
                     borderStyle: "solid",
-                    height: "15cm",
-                    width: "25cm",
-                    overflow: "scroll",
+                    height: "8cm",
+                    width: "30cm",
+                    overflowY: "scroll",
+                    overflowX: "hidden",
                   }}
                 >
                   {this.state.fileContent}
@@ -859,11 +879,16 @@ class Main extends Component {
             <td length="25%"> </td>
           </tr>
         </table>
-        <br></br>
         <p>
-          <button onClick={this.handleSaveFile}> Save Work on System</button>
+          <button style={buttonStyle} onClick={this.handleSaveFile}>
+            {" "}
+            Save Work on System
+          </button>
           {"     "}
-          <button onClick={this.handleClickRetrunToMainMenu}>
+          <button
+            style={buttonStyle}
+            onClick={this.handleClickRetrunToMainMenu}
+          >
             {" "}
             Return to Main Menu
           </button>
