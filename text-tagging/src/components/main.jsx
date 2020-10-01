@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import Background from "../images/backgroundabout.jpg";
 import logo from "../images/logo.png";
 import biulogo from "../images/biulogo.png";
+import TaggedTextArea from "./taggedTextArea";
 import { ContextMenu, MenuItem, ContextMenuTrigger } from "react-contextmenu";
 import ReactDOM from "react-dom";
 import { throwStatement } from "@babel/types";
@@ -47,7 +48,7 @@ class Main extends Component {
     fileToUploadContent: "",
     newlyUploadedFileName: "",
     formattedparts: "",
-    tags: {
+    tagsAndColors: {
       //person: "yellow",
       //place: "red",
       //bla: "lightpink",
@@ -261,7 +262,7 @@ class Main extends Component {
   // previously called acceptFilesFromServer
   setCurrentTextFile = (text) => {
     let filename = text.split("\n");
-    let fileData = text.slice(filename[0].length + 1, text.le);
+    let fileData = text.slice(filename[0].length + 1, text.lenth);
     //first chunk of text is the name
     this.setState({ filename: filename[0] });
     //the rest of the text
@@ -290,11 +291,11 @@ class Main extends Component {
       newTags[pairKey] = pairValue;
     }
 
-    this.state.tags = newTags;
+    this.state.tagsAndColors = newTags;
     this.state.tagsList = tagslist;
     this.setTags();
     // Initiate setState so the view will update.
-    this.setState({ tags: newTags });
+    this.setState({ tagsAndColors: newTags });
   };
 
   // previously called loadFile
@@ -459,15 +460,6 @@ class Main extends Component {
       this.isSpecialChar(
         cleanText[indexOfCleanText + rightIndexOfHighlightedChunkAtHisSpan - 1]
       )
-      //(cleanText[
-      //  indexOfCleanText + rightIndexOfHighlightedChunkAtHisSpan - 1
-      //] == " " ||
-      //  cleanText[
-      //    indexOfCleanText + rightIndexOfHighlightedChunkAtHisSpan - 1
-      //  ] == "\t" ||
-      //  cleanText[
-      //    indexOfCleanText + rightIndexOfHighlightedChunkAtHisSpan - 1
-      //  ] == "\n")
     ) {
       end = indexOfCleanText + rightIndexOfHighlightedChunkAtHisSpan - 1;
     } else if (rightIndexOfHighlightedChunkAtHisSpan == textInChunk.length) {
@@ -651,7 +643,9 @@ class Main extends Component {
                   //part.toLowerCase() === higlight.toLowerCase()
                   {
                     fontWeight: "bold",
-                    backgroundColor: this.state.tags[part.split("%")[1]],
+                    backgroundColor: this.state.tagsAndColors[
+                      part.split("%")[1]
+                    ],
                   }
                 : {}
             }
@@ -728,7 +722,7 @@ class Main extends Component {
     if (this.state.pageLayout == "choose") {
       return this.returnMainMenuLayout();
     } else if (this.state.pageLayout == "edit") {
-      return this.returnEditFileLayout();
+      return this.returnTaggedTextArea();
     }
   };
   // Returns the page
@@ -905,6 +899,67 @@ class Main extends Component {
     return page;
   };
 
+  //<taggedTextArea
+  //      key="taddedTextArea"
+  //      fileContent={this.props.fileContentClean}
+  //      tags={this.state.tagsList}
+  //      specialCharsList={this.state.specialCharsList}
+  //    />
+  returnTaggedTextArea = () => {
+    let page = (
+      <div>
+        <h6>
+          {" "}
+          <b>
+            Choosen Article: {this.state.filename}
+            <br></br>
+            Choosen Configuration File: {this.state.conffilename}
+          </b>
+        </h6>
+
+        <br></br>
+        <h6>
+          {" "}
+          <b>Add or edit tags by selecting and right clicking the text.</b>{" "}
+        </h6>
+        <TaggedTextArea
+          tagsAndColors={this.state.tagsAndColors}
+          tagsList={this.state.tagsList}
+          specialCharsList={this.state.specialCharsList}
+          fileContent={this.state.fileContentClean}
+          updateFileContent={this.updateFileContent}
+        />
+        <p>
+          <button style={buttonStyle} onClick={this.handleSaveFile}>
+            {" "}
+            Save Work on System
+          </button>
+          {"     "}
+          <button
+            style={buttonStyle}
+            onClick={this.handleClickRetrunToMainMenu}
+          >
+            {" "}
+            Return to Main Menu
+          </button>
+          <div>
+            <a
+              href="#"
+              onClick={this.handleClick1}
+              onClose={this.handleOnClose}
+            ></a>
+          </div>
+        </p>
+      </div>
+    );
+    return page;
+  };
+
+  updateFileContent = (content) => {
+    this.state.isUpTodate = false;
+    this.setState({ fileContentClean: content });
+  };
+
   // Creates a menu that appears when the user press the right click.
   // Creates only the menu items and not the menu itself.
   // The menu created depends on the value of this.state.isHighlightedTextTagged
@@ -944,204 +999,3 @@ class Main extends Component {
   };
 }
 export default Main;
-
-// UI before sepsration to pages.
-//<div
-//align="center"
-//style={{ backgroundImage: `url(${Background})`, height: "100vh" }}
-//>
-//<br></br>
-//<br></br>
-//<h1>
-//  {" "}
-//  <b>Welcome to Tags Manager</b>{" "}
-//</h1>
-//<br></br>
-//<div>
-//  <h5>
-//    Choose article and configutation file or upload new atricle to the
-//    from local computer
-//  </h5>
-//  <table>
-//    <tr>
-//      <td> Choose an article: </td>
-//      <td>
-//        <select name="fileChoser" id="fileChoser">
-//          {" "}
-//          {this.createList(this.state.filesList)}
-//        </select>{" "}
-//      </td>
-//    </tr>
-//    <tr>
-//      <td>Choose a configuration file</td>
-//      <td>
-//        <select name="conffileChoser" id="conffileChoser">
-//          {this.createList(this.state.confFileList)}{" "}
-//        </select>
-//      </td>
-//    </tr>
-//    <tr>
-//      <td align="center" colspan="2">
-//        <button onClick={this.handleClickLoadFiles}>
-//          {" "}
-//          Load files
-//        </button>
-//      </td>
-//      <td> </td>
-//    </tr>
-//  </table>
-//  <br></br>
-//</div></div>  <p>
-//    Upload New File to Server
-//</p>    <input
-//      type="file"
-//      id="text_file"
-//      onChange={this.handleClickOnUpload}
-//    ></input>
-//  </p>
-//</div>
-//</div><table length="100%">
-//</table>  <tr length="100%">
-//    <td length="25%"> </td>
-//</tr>    <td length="50%">
-//      {" "}
-//</td>      <ContextMenuTrigger id="some_unique_identifier">
-//</ContextMenuTrigger>       <div
-//          id="text"
-//          onClickCapture={this.captureHighlightedText}
-//          style={{ backgroundColor: "white" }}
-//        >
-//          {this.state.fileContent}
-//        </div>{" "}
-//      </ContextMenuTrigger>
-//      <ContextMenu id="some_unique_identifier">
-//        {this.createMenu()}
-//      </ContextMenu>
-//    </td>
-//    <td length="25%"> </td>
-//  </tr>
-//</table>
-//<p>
-//  <button onClick={this.handleSaveFile}> Save Work on System</button>
-//</p>
-//</div>
-
-// for debug
-//          <dir> startIndex: {this.state.leftIndex} </dir>
-//          <dir> endIndex: {this.state.rightIndex} </dir>
-//          <dir> begining: {this.state.begining} </dir>
-//          <dir> end: {this.state.end} </dir>
-//          <dir> pre: {this.state.preHighlightedText} </dir>
-//          <dir> in: {this.state.highlightedText} </dir>
-//          <dir> post: {this.state.postHighlightedText}</dir>
-
-//onClick={this.captureHighlightedText}
-
-/**
-<p>
-            Choose an article
-            <input
-              type="file"
-              id="text_file"
-              onChange={this.handleClickOnUpload}
-            ></input>
-          </p>
-          <p>
-            Choose Configuration file
-            <input
-              type="file"
-              id="config_file"
-              onChange={this.loadConfiguration}
-            ></input>
-          </p>
-           */
-//onDoubleClickCapture={this.captureHighlightedText}
-
-// loadConfiguration = () => {
-//   if (window.File && window.FileReader && window.FileList && window.Blob) {
-//    var preview = document.getElementById("temporaryPlace");
-//   var file = document.querySelector("input[id=config_file]").files[0];
-//   var reader = new FileReader();
-//   var textHolder = "File Content hasnot set";
-
-//  var textFile = /text.*/;
-//  if (file.type.match(textFile)) {
-//   reader.onload = this.tagsConvert;
-// } else {
-//  preview.innerHTML =
-//   "<span class='error'>It doesn't seem to be a text file!</span>";
-// }
-// reader.readAsText(file);
-//} else {
-//  alert("Your browser is too old to support HTML5 File API");
-// }
-// };
-//if (file.type.match(textFile)) {
-//  reader.onload = function(event) {
-//    preview.innerHTML = event.target.result;
-//    //this.setState({ fileContent: event.target.result });
-//  };
-//}
-// tagsConvert = (eventTags) => {
-// let conFileContent = eventTags.target.result;
-// let newTags = {}; //person: "yellow", place: "red", bla: "lightpink", period: "green"};
-// Helps to create the context menu.
-// let tagslist = [];
-
-//let lines = conFileContent.split("\n");
-//for (let i = 0; i < lines.length; i++) {
-//  let currentPair = lines[i].split(":");
-//  tagslist.push(currentPair[0]);
-//  let pairKey = currentPair[0];
-//  let pairValue = currentPair[1];
-//  newTags[pairKey] = pairValue;
-//}
-
-//this.state.tags = newTags;
-//this.state.tagsList = tagslist;
-//this.setTags();
-// Initiate setState so the view will update.
-//this.setState({ tags: newTags });
-//};
-
-// highlightText = () => {
-//   let textHolder = this.fileContentClean;
-//   this.setState({
-//     fileContent: this.getHighlightedText(textHolder, this.state.tagbox)
-//   });
-// };
-
-//handleChange = event => {
-//  this.setState({ tagbox: event.target.value });
-//};
-
-//getHighlightedText = (data, mark) => {
-//  //console.log(this);
-//  let text = data;
-//  let higlight = mark; //this.state.tagbox;
-//  // Split on higlight term and include term into parts, ignore case
-//  let parts = text.split(new RegExp(`(${higlight})`, "gi"));
-//  let taggedText = (
-//    <div>
-//      {" "}
-//      {parts.map((part, i) => (
-//        <span
-//          key={i}
-//          id={i}
-//          style={
-//            part.toLowerCase() === higlight.toLowerCase()
-//              ? {
-//                  fontWeight: "bold",
-//                  backgroundColor: this.state.tagbox[part]
-//                }
-//              : {}
-//          }
-//        >
-//          {part}
-//        </span>
-//      ))}{" "}
-//    </div>
-//  );
-//  return taggedText;
-//};
-//
