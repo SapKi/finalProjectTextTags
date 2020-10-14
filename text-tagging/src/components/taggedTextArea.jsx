@@ -10,7 +10,6 @@ class taggedTextArea extends Component {
     postHighlightedText: "",
 
     preHtmlFormatedText: [],
-    newLineCharacterLength: 1,
 
     isHighlightedTextTagged: false,
     isUpTodate: true,
@@ -37,7 +36,9 @@ class taggedTextArea extends Component {
     }
 
     let text = this.props.fileContent;
-    let lines = this.separateIntoLines(text);
+    let regexIsSpace = RegExp("\n");
+    let lines = text.split(regexIsSpace);
+    //let lines = this.separateIntoLines(text);
 
     // Work on each line seperately.
     // Convert every line to a format that later will be converted,
@@ -66,23 +67,6 @@ class taggedTextArea extends Component {
     );
 
     return htmlForm;
-  };
-
-  separateIntoLines = (text) => {
-    // Fist check if the new line character is \n\r
-    let regexIsSpace = RegExp("\r\n");
-    let lines = text.split(regexIsSpace);
-    this.state.newLineCharacterLength = 2;
-
-    // If the new line character is not \n\r
-    if (lines.length == 1) {
-      // The new line character is \n or \r.
-      regexIsSpace = RegExp("\n|\r");
-      lines = text.split(regexIsSpace);
-      this.state.newLineCharacterLength = 1;
-    }
-
-    return lines;
   };
 
   separateTaggedFromUntaggedText = (text) => {
@@ -228,8 +212,8 @@ class taggedTextArea extends Component {
     let lineAndparagraph = window.getSelection().anchorNode.parentElement.id;
     lineAndparagraph = lineAndparagraph.split(",");
     console.log("lineAndparagraph = " + lineAndparagraph);
-    let line = lineAndparagraph[0];
-    let paragraph = lineAndparagraph[1];
+    let line = parseInt(lineAndparagraph[0]);
+    let paragraph = parseInt(lineAndparagraph[1]);
 
     // If the highlighted text is not valid.
     if (
@@ -292,8 +276,8 @@ class taggedTextArea extends Component {
     this.state.rightIndex = borders[1] - offset;
     this.state.begining = borders[0];
     this.state.end = borders[1];
-    this.setState({ preHighlightedText: preTag });
-    this.setState({ highlightedText: inTag });
+    this.state.preHighlightedText = preTag;
+    this.state.highlightedText = inTag;
     this.setState({ postHighlightedText: postTag });
   };
 
@@ -380,7 +364,7 @@ class taggedTextArea extends Component {
     let offset = 0;
 
     // Add the number of new line character to the offset
-    offset += line * this.state.newLineCharacterLength;
+    offset += line;
 
     // Go through the text lines.
     for (let i = 0; i <= line; i++) {
