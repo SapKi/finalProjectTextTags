@@ -35,10 +35,10 @@ class taggedTextArea extends Component {
       return;
     }
 
+    // Separate the text in to lines.
     let text = this.props.fileContent;
     let regexIsSpace = RegExp("\n");
     let lines = text.split(regexIsSpace);
-    //let lines = this.separateIntoLines(text);
 
     // Work on each line seperately.
     // Convert every line to a format that later will be converted,
@@ -54,6 +54,7 @@ class taggedTextArea extends Component {
 
     this.state.preHtmlFormatedText = convertedLines;
 
+    // Add a break after each line.
     let htmlForm = (
       <React.Fragment>
         {htmlFormLines.map((line, i) => (
@@ -146,8 +147,7 @@ class taggedTextArea extends Component {
             id={lineNumber + "," + i}
             style={
               regexIsTagged.test(part)
-                ? //divopentag.test(part.toLowerCase()) || divclosingtag.test(part.toLowerCase())
-                  //part.toLowerCase() === higlight.toLowerCase()
+                ?
                   {
                     fontWeight: "bold",
                     backgroundColor: this.props.tagsAndColors[
@@ -199,6 +199,8 @@ class taggedTextArea extends Component {
     this.state.postHighlightedText = "";
   };
 
+  // Recognise the text the user Highlights, and the text segments that
+  // comes before and after the Highlighted text.
   captureHighlightedText = (event, data) => {
     if (window.getSelection() == NaN) {
       return;
@@ -208,22 +210,14 @@ class taggedTextArea extends Component {
     let extent = window.getSelection().extentOffset;
     let formatedText = this.state.preHtmlFormatedText;
 
-    // Get the part number the highlited text is in.
+    // Get the lines number and part number the highlited text is in.
     let lineAndparagraph = window.getSelection().anchorNode.parentElement.id;
     lineAndparagraph = lineAndparagraph.split(",");
-    console.log("lineAndparagraph = " + lineAndparagraph);
     let line = parseInt(lineAndparagraph[0]);
     let paragraph = parseInt(lineAndparagraph[1]);
-
+    
     // If the highlighted text is not valid.
-    if (
-      typeof line === "undefined" ||
-      typeof paragraph === "undefined" ||
-      typeof lineAndparagraph === "undefined" ||
-      line === "" ||
-      paragraph === "" ||
-      lineAndparagraph === ""
-    ) {
+    if(isNaN(line) || isNaN(paragraph)) {
       return;
     }
 
@@ -245,40 +239,8 @@ class taggedTextArea extends Component {
     borders[0] += offset;
     borders[1] += offset;
 
-    let preTag;
-    let inTag;
-    let postTag;
+    this.setPreInAndAfterHighlightedText(formatedText, line, paragraph, borders, offset);
 
-    let fileContent = this.props.fileContent;
-
-    // If the highlited text is not already tagged.
-    if (formatedText[line][paragraph][0] != "%") {
-      preTag = fileContent.substring(0, borders[0]);
-      inTag = fileContent.substring(borders[0], borders[1]);
-      postTag = fileContent.substring(borders[1], fileContent.length);
-      this.state.isHighlightedTextTagged = false;
-    } else {
-      let textParagraph = formatedText[line][paragraph].split("%");
-      let tagLength = textParagraph[1].length;
-      preTag = fileContent.substring(0, offset);
-      inTag = fileContent.substring(
-        offset + tagLength + 2,
-        offset + tagLength + 2 + textParagraph[2].length
-      );
-      postTag = fileContent.substring(
-        offset + textParagraph[2].length + 2 * tagLength + 5,
-        fileContent.length
-      );
-      this.state.isHighlightedTextTagged = true;
-    }
-
-    this.state.leftIndex = borders[0] - offset;
-    this.state.rightIndex = borders[1] - offset;
-    this.state.begining = borders[0];
-    this.state.end = borders[1];
-    this.state.preHighlightedText = preTag;
-    this.state.highlightedText = inTag;
-    this.setState({ postHighlightedText: postTag });
   };
 
   calcBordersOfHighlightedText = (base, extent) => {
@@ -402,6 +364,41 @@ class taggedTextArea extends Component {
     //.offset += leftBorder;
   };
 
+  setPreInAndAfterHighlightedText = (formatedText, line, paragraph, borders, offset) =>{
+    let preTag;
+    let inTag;
+    let postTag;
+
+    let fileContent = this.props.fileContent;
+
+    // If the highlited text is not already tagged.
+    if (formatedText[line][paragraph][0] != "%") {
+      preTag = fileContent.substring(0, borders[0]);
+      inTag = fileContent.substring(borders[0], borders[1]);
+      postTag = fileContent.substring(borders[1], fileContent.length);
+      this.state.isHighlightedTextTagged = false;
+    }
+    // The highlighted text is surrounded by a tag. 
+    else {
+      let textParagraph = formatedText[line][paragraph].split("%");
+      let tagLength = textParagraph[1].length;
+      preTag = fileContent.substring(0, offset);
+      inTag = fileContent.substring(
+        offset + tagLength + 2,
+        offset + tagLength + 2 + textParagraph[2].length
+      );
+      postTag = fileContent.substring(
+        offset + textParagraph[2].length + 2 * tagLength + 5,
+        fileContent.length
+      );
+      this.state.isHighlightedTextTagged = true;
+    }
+
+    this.state.preHighlightedText = preTag;
+    this.state.highlightedText = inTag;
+    this.setState({ postHighlightedText: postTag });
+  };
+
   render = () => {
     let page = (
       <div>
@@ -410,7 +407,7 @@ class taggedTextArea extends Component {
             <td length="25%"> </td>
             <td length="50%">
               {" "}
-              <ContextMenuTrigger id="some_unique_identifier">
+              <ContextMenuTrigger id="context_menu_trigger">
                 <div
                   id="text"
                   onClickCapture={this.captureHighlightedText}
@@ -426,7 +423,7 @@ class taggedTextArea extends Component {
                   {this.setTags(this.props.fileContent)}
                 </div>{" "}
               </ContextMenuTrigger>
-              <ContextMenu id="some_unique_identifier">
+              <ContextMenu id="context_menu_trigger">
                 {this.createMenu()}
               </ContextMenu>
             </td>
@@ -438,6 +435,13 @@ class taggedTextArea extends Component {
     return page;
   };
 
+  // Creates a menu that appears when the user press the right click.
+  // Creates only the menu items and not the menu itself.
+  // The menu created depends on the value of this.state.isHighlightedTextTagged
+  // that dends on the valye of this.state.highlightedText
+  // If the highlighted text is not serrounded by a tag, the menu contains
+  // all the tags avaliable, and if not, the menu contains only the option
+  // "remove tag:.
   createMenu = () => {
     let menu;
     if (this.state.isHighlightedTextTagged == false) {
@@ -460,13 +464,6 @@ class taggedTextArea extends Component {
       );
     }
     return menu;
-  };
-
-  // Gets a list of string and make a drop down option list of them.
-  // Creates only the list of the drop down list <option>
-  // and not the <select> drop down list itself.
-  createList = (list) => {
-    return list.map((part, i) => <option value={part}> {part}</option>);
   };
 }
 

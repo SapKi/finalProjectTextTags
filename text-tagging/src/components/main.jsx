@@ -10,18 +10,6 @@ import "react-s-alert/dist/s-alert-default.css";
 import Alert from "react-s-alert";
 import "react-s-alert/dist/s-alert-default.css";
 import "react-s-alert/dist/s-alert-css-effects/slide.css";
-//display: "none",
-//  fontFamily: "Guttman Hatzvi",
-//  width: "auto",
-//  height: "25cm",
-//  overflow: "scroll",
-//  fontSize: "medium",
-//  overflowY: "scroll",
-//positionY: "absolute",
-//positionX: "absolute",
-//width: "auto",
-//height: "100%",
-//margin: "auto",
 
 const divStyle = {
   color: "#5B6676",
@@ -40,39 +28,30 @@ const buttonStyle = {
 // backgroundSize: "100%",
 class Main extends Component {
   state = {
+    // Holds infornation on the files are cuurently being worked on.
     filename: "",
     conffilename: "",
     fileContent: "",
-    fileContentClean: "",
-    fileToUploadName: "",
-    fileToUploadContent: "",
-    newlyUploadedFileName: "",
-    formattedparts: "",
-    tagsAndColors: {
-      //person: "yellow",
-      //place: "red",
-      //bla: "lightpink",
-      //date: "blue",
-      //event: "purple"
-    },
-    configurationFileContentClean: "",
-    tagsList: [],
+    configurationFileContent: "",
+    isUpTodate: true,
+
+    // Holds te lists of files, configuration files, and spesial character,
+    // the server have sent.
     filesList: [],
     confFileList: [],
     specialCharsList: [],
-    // Context menu
-    contextMenu: "",
-    // Used to keep the text the user marked
-    preHighlightedText: "",
-    highlightedText: "",
-    postHighlightedText: "",
-    //    leftIndex: -1,
-    //    rightIndex: -1,
-    //    begining: -1,
-    //    end: -1,
-    isHighlightedTextTagged: false,
-    isUpTodate: true,
-    apiResponse: "",
+
+    // Holds the tags' names the user can tag the text with.
+    // Each tag has its color.
+    tagsList: [],
+    tagsAndColors: {},
+
+    // Used when a new file is uploaded to the server.
+    fileToUploadName: "",
+    fileToUploadContent: "",
+    newlyUploadedFileName: "",
+    
+    // 
     pageLayout: "choose",
     actions: ["clean file", "tagged file", "report", "html"],
   };
@@ -148,9 +127,9 @@ class Main extends Component {
       method: "POST",
       headers: { "Content-type": "application/json" },
       body: JSON.stringify({
-        data: this.state.fileContentClean,
+        data: this.state.fileContent,
         filename: this.state.filename,
-        confData: this.state.configurationFileContentClean,
+        confData: this.state.configurationFileContent,
         confFileName: this.state.conffilename,
       }),
     }).then(function (response) {
@@ -160,7 +139,7 @@ class Main extends Component {
   };
 
   handleSaveFile = (eventArgs) => {
-    let request = this.state.filename + "\n" + this.state.fileContentClean;
+    let request = this.state.filename + "\n" + this.state.fileContent;
     let address = "http://localhost:9000/saveFile";
 
     let fileTosaveData = "";
@@ -174,7 +153,7 @@ class Main extends Component {
       this.state.fileToUploadName = "";
     } else {
       fileTosaveName = this.state.filename;
-      fileTosaveData = this.state.fileContentClean;
+      fileTosaveData = this.state.fileContent;
       this.handleStatisticsFile("");
       this.makeHtml();
     }
@@ -193,13 +172,6 @@ class Main extends Component {
 
     this.state.isUpTodate = true;
 
-    //    var message = new Notification("RandomString");
-    //    message.onclick = function () {
-    //      alert("Random Message");
-    //    };
-    //.then(function (response) {
-    //console.log(response);
-    //});
   };
 
   // retrunToChooseFile
@@ -245,20 +217,6 @@ class Main extends Component {
     });
   };
 
-  //  downloadEmployeeData = () => {
-  //    fetch('http://localhost:8080/employees/download')
-  //      .then(response => {
-  //        response.blob().then(blob => {
-  //          let url = window.URL.createObjectURL(blob);
-  //          let a = document.createElement('a');
-  //          a.href = url;
-  //          a.download = 'employees.json';
-  //          a.click();
-  //        });
-  //        //window.location.href = response.url;
-  //    });
-  //  }
-
   // previously called acceptFilesFromServer
   setCurrentTextFile = (text) => {
     let filename = text.split("\n");
@@ -267,8 +225,7 @@ class Main extends Component {
     this.setState({ filename: filename[0] });
     //the rest of the text
     this.setState({ fileContent: fileData });
-    this.setState({ fileContentClean: fileData });
-    this.setTags();
+    //this.setTags();
     //note
   };
 
@@ -277,7 +234,7 @@ class Main extends Component {
     let filename = text.split("\n");
     this.setState({ conffilename: filename[0] });
     let conFileContent = filename.slice(1, filename.length);
-    this.state.configurationFileContentClean = conFileContent;
+    this.state.configurationFileContent = conFileContent;
     let newTags = {}; //person: "yellow", place: "red", bla: "lightpink", period: "green"};
 
     // Helps to create the context menu.
@@ -293,16 +250,13 @@ class Main extends Component {
 
     this.state.tagsAndColors = newTags;
     this.state.tagsList = tagslist;
-    this.setTags();
+    //this.setTags();
     // Initiate setState so the view will update.
     this.setState({ tagsAndColors: newTags });
   };
 
   // previously called loadFile
   uploadFileToServer = (event) => {
-    //this.state.fileContent = event.target.result;
-    //this.state.fileContentClean = event.target.result;
-    // this.state.fileToUploadContent =
 
     this.state.fileToUploadContent = event.target.result;
     this.state.newlyUploadedFileName = this.state.fileToUploadName;
@@ -374,303 +328,6 @@ class Main extends Component {
     }
   };
 
-  // Recognise the text the user Highlights, and the text segments that
-  // comes before and after the Highlighted text.
-  captureHighlightedText = (event, data) => {
-    if (window.getSelection() == NaN) {
-      return;
-    }
-
-    // The text is seperated to parts.
-    // Get the index of the highlited text in his part.
-    let leftIndexOfHighlightedChunkAtHisSpan;
-    let rightIndexOfHighlightedChunkAtHisSpan;
-    if (
-      window.getSelection().baseOffset <= window.getSelection().extentOffset
-    ) {
-      leftIndexOfHighlightedChunkAtHisSpan = window.getSelection().baseOffset;
-      rightIndexOfHighlightedChunkAtHisSpan = window.getSelection()
-        .extentOffset;
-    } else if (
-      window.getSelection().baseOffset > window.getSelection().extentOffset
-    ) {
-      leftIndexOfHighlightedChunkAtHisSpan = window.getSelection().extentOffset;
-      rightIndexOfHighlightedChunkAtHisSpan = window.getSelection().baseOffset;
-    }
-
-    // Get the part number the highlited text is in.
-    let spanOfHighlightedChunk = window.getSelection().anchorNode.parentElement
-      .id;
-
-    //calculate the offset from the beggining of the text
-    let indexOfCleanText = 0;
-    for (let i = 0; i < spanOfHighlightedChunk; i++) {
-      //checking chunk if its not start with % we summing the length
-      if (this.state.formattedtext[i][0] != "%") {
-        indexOfCleanText += this.state.formattedtext[i].length;
-      } else {
-        let currentChunk = this.state.formattedtext[i].split("%");
-        let tagLength = currentChunk[1].length;
-        let textlength = currentChunk[2].length;
-        indexOfCleanText = indexOfCleanText + textlength + 2 * tagLength + 5;
-      }
-    }
-
-    // indexOfCleanTextc contains the location of the first caracter chosen in the text as
-    // it in raw text.
-
-    // Sreaching for the begining of the highlighted word.
-    let cleanText = this.state.fileContentClean;
-    let begining;
-    // If the first chracter is in a begining of a chunk.
-    if (leftIndexOfHighlightedChunkAtHisSpan == 0) {
-      begining = indexOfCleanText;
-    } else {
-      let indexToFindTheHighligtedWordStart = leftIndexOfHighlightedChunkAtHisSpan;
-      for (
-        ;
-        indexToFindTheHighligtedWordStart >= 0;
-        indexToFindTheHighligtedWordStart--
-      ) {
-        // we reached the befining of the current paragraph.
-        if (indexToFindTheHighligtedWordStart == 0) {
-          begining = indexOfCleanText;
-          // If we reached a space character.
-        } else {
-          let previousChar =
-            cleanText[indexOfCleanText + indexToFindTheHighligtedWordStart - 1];
-          //(!(previousChar.match(/[a-z]/i) || previousChar.match(/[0-9]/)))
-          if (this.isSpecialChar(previousChar)) {
-            //  previousChar == " " ||
-            //  previousChar == "\n" ||
-            //  previousChar == "\t"
-            begining = indexOfCleanText + indexToFindTheHighligtedWordStart;
-            break;
-          }
-        }
-      }
-    }
-
-    let textInChunk = window.getSelection().baseNode.data;
-    let end;
-    //in case of automatic space added by clicking
-    if (
-      rightIndexOfHighlightedChunkAtHisSpan !=
-        leftIndexOfHighlightedChunkAtHisSpan &&
-      this.isSpecialChar(
-        cleanText[indexOfCleanText + rightIndexOfHighlightedChunkAtHisSpan - 1]
-      )
-    ) {
-      end = indexOfCleanText + rightIndexOfHighlightedChunkAtHisSpan - 1;
-    } else if (rightIndexOfHighlightedChunkAtHisSpan == textInChunk.length) {
-      // If the last chracter is in the end of a chunk.
-      end = indexOfCleanText + textInChunk.length;
-    } else {
-      let indexToFindTheHighligtedWordEnd = rightIndexOfHighlightedChunkAtHisSpan;
-      for (
-        ;
-        indexToFindTheHighligtedWordEnd <= textInChunk.length;
-        indexToFindTheHighligtedWordEnd++
-      ) {
-        // If we reached the end of the paragraph.
-        if (indexToFindTheHighligtedWordEnd == textInChunk.length) {
-          end = indexOfCleanText + textInChunk.length;
-          // If we reached a white space.
-        } else {
-          let nextChar =
-            cleanText[indexOfCleanText + indexToFindTheHighligtedWordEnd];
-          if (this.isSpecialChar(nextChar)) {
-            //nextChar == " " || nextChar == "\n" || nextChar == "\t")
-            end = indexOfCleanText + indexToFindTheHighligtedWordEnd;
-            break;
-          }
-        }
-      }
-    }
-
-    let preTag;
-    let inTag;
-    let postTag;
-
-    // If the highlited text is not already tagged.
-    if (this.state.formattedtext[spanOfHighlightedChunk][0] != "%") {
-      preTag = cleanText.substring(0, begining);
-      inTag = cleanText.substring(begining, end);
-      postTag = cleanText.substring(end, cleanText.length);
-      this.state.isHighlightedTextTagged = false;
-      //indexOfCleanText += leftIndexOfHighlightedChunkAtHisSpan;
-      //preTag = cleanText.substring(0, indexOfCleanText);
-      //inTag = cleanText.substring(
-      //  indexOfCleanText,
-      //  indexOfCleanText + window.getSelection().toString().length
-      //);
-      //postTag = cleanText.substring(
-      //  indexOfCleanText + window.getSelection().toString().length,
-      //  cleanText.length
-      //);
-      //this.state.isHighlightedTextTagged = false;
-    } else {
-      let currentChunk = this.state.formattedtext[spanOfHighlightedChunk].split(
-        "%"
-      );
-      let tagLength = currentChunk[1].length;
-      preTag = cleanText.substring(0, indexOfCleanText);
-      inTag = cleanText.substring(
-        indexOfCleanText + tagLength + 2,
-        indexOfCleanText +
-          this.state.formattedtext[spanOfHighlightedChunk].length
-      );
-      postTag = cleanText.substring(
-        indexOfCleanText +
-          this.state.formattedtext[spanOfHighlightedChunk].length +
-          tagLength +
-          3,
-        cleanText.length
-      );
-      this.state.isHighlightedTextTagged = true;
-    }
-    this.state.leftIndex = leftIndexOfHighlightedChunkAtHisSpan;
-    this.state.rightIndex = rightIndexOfHighlightedChunkAtHisSpan;
-    this.state.begining = begining;
-    this.state.end = end;
-    this.setState({ preHighlightedText: preTag });
-    this.setState({ highlightedText: inTag });
-    this.setState({ postHighlightedText: postTag });
-  };
-
-  // When a user Highlights text segment and choose to tag that segment,
-  // this function is called.
-  // Tthe funtion update the whole text so the highlight segment will be
-  // serroiunded by a tag.
-  addTag = (event, data) => {
-    this.state.isUpTodate = false;
-    let tagName = window.getSelection().anchorNode.parentElement.id;
-    let text;
-    if (tagName != "no_tag") {
-      text =
-        this.state.preHighlightedText +
-        "<" +
-        tagName +
-        ">" +
-        this.state.highlightedText +
-        "</" +
-        tagName +
-        ">" +
-        this.state.postHighlightedText;
-    } else {
-      text =
-        this.state.preHighlightedText +
-        this.state.highlightedText +
-        this.state.postHighlightedText;
-    }
-    this.state.fileContentClean = text;
-    this.setTags();
-    this.setState({ fileContentClean: text });
-  };
-
-  // This funtiuos reads the clean text (with the tags), and turns it to the
-  // form which the text is representd to the user.
-  setTags = () => {
-    let text = this.state.fileContentClean;
-    let higlight = "<[^<]+>";
-    let regexHiglight = RegExp(higlight);
-    let closertag = "</[^<]+>";
-    let regexclosetag = RegExp(closertag);
-    let par;
-    let spanIndex = 0;
-
-    //Split on higlight term and include term into parts, ignore case
-    let parts = text.split(new RegExp(`(${higlight})`, "gi"));
-    let formattedparts = [];
-
-    for (let index = 0; index < parts.length; index++) {
-      //cheking that the current part is not a tag
-      if (
-        !(regexHiglight.test(parts[index]) && !regexclosetag.test(parts[index]))
-      ) {
-        if (parts[index] != "") formattedparts.push(parts[index]);
-      }
-      // handeling an open tag
-      else {
-        let currenttag = parts[index];
-        //building the inner tag - cuts inner text
-        currenttag = currenttag.substring(1, currenttag.length - 1);
-        let rightclosertag = "</" + currenttag + ">";
-        let regExpRightcloser = RegExp(rightclosertag);
-        //we want to keep running on string until we'll meet the right closer tag
-        let newindex = index + 1;
-        while (
-          !regExpRightcloser.test(parts[newindex]) &&
-          newindex < parts.length
-        ) {
-          newindex++;
-        }
-        //if the closing tag matches the opening tag found
-        if (newindex < parts.length) {
-          //builds the new string for injection
-          let newstring = "%" + currenttag + "%";
-
-          for (
-            let innerindex = index + 1;
-            innerindex < newindex;
-            innerindex++
-          ) {
-            newstring = newstring + parts[innerindex];
-          }
-
-          formattedparts.push(newstring);
-          index = newindex;
-        } else {
-          //if theres no closing tag to a tag so we copy the opening tag as it is
-          formattedparts.push(parts[index]);
-        }
-      }
-    }
-
-    //console.log("correct");
-
-    let tagRegex = RegExp("%.+%.+");
-    let taggedText = (
-      <div>
-        {" "}
-        {formattedparts.map((part, i) => (
-          <span
-            key={i}
-            id={i}
-            style={
-              tagRegex.test(part)
-                ? //divopentag.test(part.toLowerCase()) || divclosingtag.test(part.toLowerCase())
-                  //part.toLowerCase() === higlight.toLowerCase()
-                  {
-                    fontWeight: "bold",
-                    backgroundColor: this.state.tagsAndColors[
-                      part.split("%")[1]
-                    ],
-                  }
-                : {}
-            }
-          >
-            {part.split("%").reverse()[0]}
-          </span>
-        ))}
-      </div>
-    );
-    this.setState({ formattedtext: formattedparts });
-    this.setState({ fileContent: taggedText });
-  };
-
-  isSpecialChar = (character) => {
-    if (character == "\n") {
-      let i = 0;
-    }
-    for (let i = 0; i < this.state.specialCharsList.length; i++) {
-      if (this.state.specialCharsList[i] == character) {
-        return true;
-      }
-    }
-    return false;
-  };
-
   //alert capara
   handleClick1(e) {
     e.preventDefault();
@@ -725,6 +382,7 @@ class Main extends Component {
       return this.returnTaggedTextArea();
     }
   };
+
   // Returns the page
   returnMainMenuLayout = () => {
     let page = (
@@ -827,84 +485,7 @@ class Main extends Component {
     );
     return page;
   };
-  //colspan="2">
-  returnEditFileLayout = () => {
-    let page = (
-      <div>
-        <h6>
-          {" "}
-          <b>
-            Choosen Article: {this.state.filename}
-            <br></br>
-            Choosen Configuration File: {this.state.conffilename}
-          </b>
-        </h6>
 
-        <br></br>
-        <h6>
-          {" "}
-          <b>Add or edit tags by selecting and right clicking the text.</b>{" "}
-        </h6>
-        <table length="100%">
-          <tr length="100%">
-            <td length="25%"> </td>
-            <td length="50%">
-              {" "}
-              <ContextMenuTrigger id="some_unique_identifier">
-                <div
-                  id="text"
-                  onClickCapture={this.captureHighlightedText}
-                  style={{
-                    backgroundColor: "white",
-                    borderStyle: "solid",
-                    height: "8cm",
-                    width: "30cm",
-                    overflowY: "scroll",
-                    overflowX: "hidden",
-                  }}
-                >
-                  {this.state.fileContent}
-                </div>{" "}
-              </ContextMenuTrigger>
-              <ContextMenu id="some_unique_identifier">
-                {this.createMenu()}
-              </ContextMenu>
-            </td>
-            <td length="25%"> </td>
-          </tr>
-        </table>
-        <p>
-          <button style={buttonStyle} onClick={this.handleSaveFile}>
-            {" "}
-            Save Work on System
-          </button>
-          {"     "}
-          <button
-            style={buttonStyle}
-            onClick={this.handleClickRetrunToMainMenu}
-          >
-            {" "}
-            Return to Main Menu
-          </button>
-          <div>
-            <a
-              href="#"
-              onClick={this.handleClick1}
-              onClose={this.handleOnClose}
-            ></a>
-          </div>
-        </p>
-      </div>
-    );
-    return page;
-  };
-
-  //<taggedTextArea
-  //      key="taddedTextArea"
-  //      fileContent={this.props.fileContentClean}
-  //      tags={this.state.tagsList}
-  //      specialCharsList={this.state.specialCharsList}
-  //    />
   returnTaggedTextArea = () => {
     let page = (
       <div>
@@ -926,7 +507,7 @@ class Main extends Component {
           tagsAndColors={this.state.tagsAndColors}
           tagsList={this.state.tagsList}
           specialCharsList={this.state.specialCharsList}
-          fileContent={this.state.fileContentClean}
+          fileContent={this.state.fileContent}
           updateFileContent={this.updateFileContent}
         />
         <p>
@@ -957,38 +538,7 @@ class Main extends Component {
 
   updateFileContent = (content) => {
     this.state.isUpTodate = false;
-    this.setState({ fileContentClean: content });
-  };
-
-  // Creates a menu that appears when the user press the right click.
-  // Creates only the menu items and not the menu itself.
-  // The menu created depends on the value of this.state.isHighlightedTextTagged
-  // that dends on the valye of this.state.highlightedText
-  // If the highlighted text is not serrounded by a tag, the menu contains
-  // all the tags avaliable, and if not, the menu contains only the option
-  // "remove tag:.
-  createMenu = () => {
-    let menu;
-    if (this.state.isHighlightedTextTagged == false) {
-      menu = this.state.tagsList.map((part, i) => (
-        <MenuItem key={i} id={part} onClick={this.addTag}>
-          {" "}
-          <div id={part} style={{ backgroundColor: "white" }}>
-            Set as {part}{" "}
-          </div>
-        </MenuItem>
-      ));
-    } else {
-      menu = (
-        <MenuItem id="no_tag" onClick={this.addTag}>
-          {" "}
-          <div id="no_tag" style={{ backgroundColor: "white" }}>
-            Remove tag{" "}
-          </div>
-        </MenuItem>
-      );
-    }
-    return menu;
+    this.setState({ fileContent: content });
   };
 
   // Gets a list of string and make a drop down option list of them.
