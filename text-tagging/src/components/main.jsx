@@ -56,6 +56,7 @@ class Main extends Component {
     actions: ["clean file", "tagged file", "report", "html"],
   };
 
+  //the function thats doing the first fetch with th server
   callAPI() {
     console.log("in callApi");
     fetch("http://localhost:9000/")
@@ -63,10 +64,13 @@ class Main extends Component {
       .then((res) => this.arrageFileNamesRecivedFromServer(res));
   }
 
+  //this function lunches automaticly with the built in when the websie is running
   componentWillMount() {
     this.callAPI();
   }
 
+  //initialize the articles list, the configuration files, and special cases based
+  //on the data that received from server and held by filnames
   arrageFileNamesRecivedFromServer = (fileNames) => {
     // Saperate the files to text files and configuration files.
     let files = fileNames.split("\n");
@@ -88,6 +92,8 @@ class Main extends Component {
     this.setState({ specialCharsList: spacialChars });
   };
 
+  //lunches when the user clicks on the upload bottun -
+  //saves the chosen file name and reads the dat of the file
   handleClickOnUpload = (event) => {
     if (window.File && window.FileReader && window.FileList && window.Blob) {
       // var preview = document.getElementById("temporaryPlace");
@@ -109,6 +115,8 @@ class Main extends Component {
   };
 
   // previously called loadDataAndConfFiles
+  //saves the chosen fils name - calls to function that reads the file and transfer the appliction to
+  //he edit screen
   handleClickLoadFiles = (eventArgs) => {
     var textFile = document.getElementById("fileChoser");
     textFile = textFile.value;
@@ -120,6 +128,7 @@ class Main extends Component {
     this.setState({ pageLayout: "edit" });
   };
 
+  //asks the server to generate statistic file to the file that the function describes
   handleStatisticsFile = (eventArgs) => {
     let address = "http://localhost:9000/makeReport";
 
@@ -138,6 +147,7 @@ class Main extends Component {
     });
   };
 
+  //the function sends a request to the server to save the changes the user did in the text
   handleSaveFile = (eventArgs) => {
     let request = this.state.filename + "\n" + this.state.fileContent;
     let address = "http://localhost:9000/saveFile";
@@ -174,6 +184,7 @@ class Main extends Component {
 
   };
 
+  //returns to the main menu screen of the application
   // retrunToChooseFile
   handleClickRetrunToMainMenu = (eventArgs) => {
     if (!this.state.isUpTodate) {
@@ -184,6 +195,7 @@ class Main extends Component {
     this.state.isUpTodate = true;
   };
 
+  //describes a post request to server in order to download the chosen file type
   handleClickOnDownload = (eventArgs) => {
     var action = document.getElementById("actionChooser");
     action = action.value;
@@ -217,6 +229,7 @@ class Main extends Component {
     });
   };
 
+  //recieved the file name with the file content and saves on local variables
   // previously called acceptFilesFromServer
   setCurrentTextFile = (text) => {
     let filename = text.split("\n");
@@ -229,6 +242,7 @@ class Main extends Component {
     //note
   };
 
+  //recives configurtion file name and this file content and saves to local variables
   // previously called acceptConfigurationFilesFromServer
   setCurrentConfigurationFile = (text) => {
     let filename = text.split("\n");
@@ -255,6 +269,7 @@ class Main extends Component {
     this.setState({ tagsAndColors: newTags });
   };
 
+  //uploads new file to server and uses fetch request
   // previously called loadFile
   uploadFileToServer = (event) => {
 
@@ -269,6 +284,7 @@ class Main extends Component {
       .then(() => this.UpdateChosenFile());
   };
 
+  //describes the html form of the highlighted file
   makeHtml = () => {
     var textFile = document.getElementById("text");
     textFile = textFile.innerHTML;
@@ -297,10 +313,10 @@ class Main extends Component {
       }),
     }).then(function (response) {
       let answer = response.body.getReader();
-      console.log();
     });
   };
 
+  /////#
   UpdateChosenFile = (res) => {
     // If the list of files sent from the server had the file was added to the server.
     const exists = this.state.filesList.some(
