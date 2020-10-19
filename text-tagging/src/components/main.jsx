@@ -36,7 +36,7 @@ class Main extends Component {
     isUpTodate: true,
 
     // Holds te lists of files, configuration files, and spesial character,
-    // the server have sent.
+    // the server have sent. ****
     filesList: [],
     confFileList: [],
     specialCharsList: [],
