@@ -15,6 +15,8 @@ class taggedTextArea extends Component {
     isUpTodate: true,
   };
 
+  // This function gets a character and returns if the character 
+  // is in the application's special characters' list.
   isSpecialChar = (character) => {
     if (character == "\n") {
       let i = 0;
@@ -70,6 +72,10 @@ class taggedTextArea extends Component {
     return htmlForm;
   };
 
+  // This funtions detects the tags that appear in the text.
+  // After the detection, the function separates the text to parts.
+  // Each part contains a segment of the text and the tag that surrounds it
+  // (if the sedment is surrounded by a tag).
   separateTaggedFromUntaggedText = (text) => {
     let higlight = "<[^<]+>";
     let regexIstag = RegExp(higlight);
@@ -136,6 +142,8 @@ class taggedTextArea extends Component {
     return formattedparts;
   };
 
+  // The function gets a line from the text, (after the tags detection performed
+  // in separateTaggedFromUntaggedText), and make an html representation of the line. 
   makeHtmlForm = (lineNumber, line) => {
     let regexIsTagged = RegExp("%.+%.+");
     let htmlForm = (
@@ -243,6 +251,7 @@ class taggedTextArea extends Component {
 
   };
 
+  // 
   calcBordersOfHighlightedText = (base, extent) => {
     let leftBorder;
     let rightBorder;
