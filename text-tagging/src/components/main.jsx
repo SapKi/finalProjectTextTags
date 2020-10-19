@@ -316,7 +316,8 @@ class Main extends Component {
     });
   };
 
-  /////#
+  // this functions being used after uploading new file to the server
+  // checksif the uploading sucseeded and the updates the name of the chosen file to be the file that was uploaded 
   UpdateChosenFile = (res) => {
     // If the list of files sent from the server had the file was added to the server.
     const exists = this.state.filesList.some(
@@ -328,6 +329,7 @@ class Main extends Component {
     }
   };
 
+  // sends request to the server and asks for an article or configuration file
   //previously called handleChoosefile.
   getFileFromServer = (filename) => {
     var fileName = filename; //eventArgs.currentTarget.innerHTML.trim();
@@ -344,7 +346,8 @@ class Main extends Component {
     }
   };
 
-  //alert capara
+  // push notification to user when clicking on the "return to main menu" button
+  // without saving changes
   handleClick1(e) {
     e.preventDefault();
     Alert.info(
@@ -502,6 +505,7 @@ class Main extends Component {
     return page;
   };
 
+  // rendering the second screen of the application
   returnTaggedTextArea = () => {
     let page = (
       <div>
@@ -552,6 +556,8 @@ class Main extends Component {
     return page;
   };
 
+  // after editing - adding/removing tag to the text - the content is the updated text
+  // and insert it to the local variable of the applications
   updateFileContent = (content) => {
     this.state.isUpTodate = false;
     this.setState({ fileContent: content });

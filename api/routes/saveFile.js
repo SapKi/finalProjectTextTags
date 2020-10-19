@@ -4,6 +4,7 @@ var fs = require("fs");
 var confLoader = require("../SettingsLoader");
 var conf = new confLoader();
 
+// saves an article on the server
 router.post("/", function (req, res, next) {
   var data = "New File Contents";
   data = req.body.data;

@@ -249,6 +249,7 @@ class taggedTextArea extends Component {
 
   };
 
+  // calculate and return the start index and the end index of the highlighted text
   calcBordersOfHighlightedText = (base, extent) => {
     let leftBorder;
     let rightBorder;

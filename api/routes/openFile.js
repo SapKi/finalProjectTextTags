@@ -4,6 +4,7 @@ var router = express.Router();
 var confLoader = require("../SettingsLoader");
 var conf = new confLoader();
 
+// returns to client the content of an article
 router.get("/:id", function (req, res, next) {
   let fileName = req.params.id;
   console.log("in openFile:" + fileName);

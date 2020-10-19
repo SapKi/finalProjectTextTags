@@ -4,6 +4,8 @@ var fs = require("fs");
 var confLoader = require("../SettingsLoader");
 var conf = new confLoader();
 
+// sends to the client the application settings after the first fetch
+// including the list of articles, list of configuration files and a list of special characters
 /* GET home page. */
 router.get("/", function (req, res, next) {
   //res.render("index", { title: "Express" });

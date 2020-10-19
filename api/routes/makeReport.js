@@ -5,6 +5,8 @@ var confLoader = require("../SettingsLoader");
 var conf = new confLoader();
 //const { SSL_OP_SSLEAY_080_CLIENT_DH_BUG } = require("constants");
 
+// get a tagged article and a configuration file and make an xml file with the
+// appearance of the tags
 router.post("/", function (req, res, next) {
   let data = req.body.data;
   let filename = req.body.filename;
@@ -31,6 +33,7 @@ router.post("/", function (req, res, next) {
   });
 });
 
+// creates dictionary that for each tag contain the appearance in the text
 function makeTagAppearienceDictionary(filedata, confdata) {
   // Get all the tags from the configuration file.
   let tags = [];
@@ -117,6 +120,7 @@ function makeTagAppearienceDictionary(filedata, confdata) {
   return dictTagsAppearnce;
 }
 
+// get the dictionary mapping between the tags and their appearance and creates xml
 function makeXML(filename, conffilename, dicttags) {
   let tab = 0;
   let tabString = "";
