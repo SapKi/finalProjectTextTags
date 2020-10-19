@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import ReactDOM from "react-dom";
 import { ContextMenu, MenuItem, ContextMenuTrigger } from "react-contextmenu";
 
+
 class taggedTextArea extends Component {
   state = {
     // Used to keep the text the user marked
@@ -18,9 +19,6 @@ class taggedTextArea extends Component {
   // This function gets a character and returns if the character 
   // is in the application's special characters' list.
   isSpecialChar = (character) => {
-    if (character == "\n") {
-      let i = 0;
-    }
     for (let i = 0; i < this.props.specialCharsList.length; i++) {
       if (this.props.specialCharsList[i] == character) {
         return true;
@@ -251,7 +249,6 @@ class taggedTextArea extends Component {
 
   };
 
-  // 
   calcBordersOfHighlightedText = (base, extent) => {
     let leftBorder;
     let rightBorder;
@@ -267,6 +264,8 @@ class taggedTextArea extends Component {
     return [leftBorder, rightBorder];
   };
 
+
+  //Returns the start index and the end index of the word that contains highligted letters.
   extendHighlightToEntireWord = (
     text,
     line,
@@ -329,6 +328,7 @@ class taggedTextArea extends Component {
     return [begining, end];
   };
 
+  // Calculating the absolute index of the start of the text
   clacOfsetFromTheStartOfTheText = (text, line, paragraph) => {
     //calculate the offset from the beggining of the text
     // Calc the number of letter in the previous lines.
@@ -373,6 +373,8 @@ class taggedTextArea extends Component {
     //.offset += leftBorder;
   };
 
+  //cuts the highlighted text by saving 3 strings. the text before the highlighted
+  //text, the highlighted text and the text after the highlighted text  
   setPreInAndAfterHighlightedText = (formatedText, line, paragraph, borders, offset) =>{
     let preTag;
     let inTag;
