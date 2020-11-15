@@ -13,7 +13,7 @@ class taggedTextArea extends Component {
     preHtmlFormatedText: [],
 
     isHighlightedTextTagged: false,
-    isUpTodate: true,
+    //isUpTodate: true,
   };
 
   // This function gets a character and returns if the character 
@@ -180,7 +180,7 @@ class taggedTextArea extends Component {
     if (this.state.highlightedText == ""){
       return;
     }
-    this.state.isUpTodate = false;
+    //this.state.isUpTodate = false;
     let tagName = window.getSelection().anchorNode.parentElement.id;
     let text;
     if (tagName != "no_tag") {

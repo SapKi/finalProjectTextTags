@@ -17,7 +17,6 @@ router.post("/", function (req, res, next) {
       "\\" +
       req.body.filename;
 
-    console.log(data);
     fs.writeFile(pathOfFile, data, "utf-8", (err) => {
       if (err) console.log(err);
       //console.log("Successfully Written to File.");
@@ -37,13 +36,10 @@ router.post("/", function (req, res, next) {
       "\\" +
       req.body.filename;
 
-    // If there is not a copy of the file at the clean files folder,
-    // save the file to this folder as well.
     fs.exists(pathOfCleanText, (exist) => {
       if (!exist) {
         fs.writeFile(pathOfCleanText, data, "utf16le", (err) => {
           if (err) console.log(err);
-          //console.log("Successfully Written to File.");
         });
       }
     });

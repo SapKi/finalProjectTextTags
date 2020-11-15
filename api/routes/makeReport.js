@@ -25,8 +25,6 @@ router.post("/", function (req, res, next) {
     console.log("Successfully Written to File.");
   });
 
-  console.log("data = " + data);
-  console.log("filename = " + filename);
   fs.writeFile(filename, data, "utf16le", (err) => {
     if (err) console.log(err);
     console.log("Successfully Written to File.");
@@ -53,7 +51,7 @@ function makeTagAppearienceDictionary(filedata, confdata) {
   }
 
   // Separate the text to lines.
-  let lines = filedata.split("\r");
+  let lines = filedata.split("\n");
 
   // Scan the text and find tgas.
   for (let i = 0; i < lines.length; i++) {
@@ -105,7 +103,6 @@ function makeTagAppearienceDictionary(filedata, confdata) {
               );
               // This current tag does not exist in the dictionary of tags.
             } else {
-              // todo check the answer from pnina to this mikre katse.
               // What if the tag does not appeare in the dictionary (configuraition file).            }
             }
           } else {
