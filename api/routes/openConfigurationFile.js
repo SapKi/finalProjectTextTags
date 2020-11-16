@@ -4,14 +4,13 @@ var router = express.Router();
 var confLoader = require("../SettingsLoader");
 var conf = new confLoader();
 
+// returns to client the content of configuration file
 router.get("/:id", function (req, res, next) {
   var fileName = req.params.id;
   let filePath =
     conf.getRootFolder() + "\\" + conf.getConfigurationsFolder() + "\\";
 
   fs.readFile(
-    //C:\\Users\\Yifat\\finalProject\\files\\configuration\\
-    // "C:\\Users\\Sapir\\Documents\\GitHub\\finalProject\\files\\configuration\\" + fileName,
     filePath + fileName,
     "utf-8",
     function (err, data) {
@@ -21,8 +20,6 @@ router.get("/:id", function (req, res, next) {
       return res.end();
     }
   );
-
-  //res.send("laaaaaaaaaaaaaaaaassssssssssssssss");
 });
 
 module.exports = router;

@@ -4,6 +4,7 @@ var fs = require("fs");
 var confLoader = require("../SettingsLoader");
 var conf = new confLoader();
 
+// sends files to the client by request
 router.post("/", function (req, res, next) {
   let action = req.body.action;
   let filename = req.body.filename;

@@ -5,6 +5,8 @@ var confLoader = require("../SettingsLoader");
 var conf = new confLoader();
 //const { SSL_OP_SSLEAY_080_CLIENT_DH_BUG } = require("constants");
 
+// get a tagged article and a configuration file and make an xml file with the
+// appearance of the tags
 router.post("/", function (req, res, next) {
   let data = req.body.data;
   let filename = req.body.filename;
@@ -23,14 +25,13 @@ router.post("/", function (req, res, next) {
     console.log("Successfully Written to File.");
   });
 
-  console.log("data = " + data);
-  console.log("filename = " + filename);
   fs.writeFile(filename, data, "utf16le", (err) => {
     if (err) console.log(err);
     console.log("Successfully Written to File.");
   });
 });
 
+// creates dictionary that for each tag contain the appearance in the text
 function makeTagAppearienceDictionary(filedata, confdata) {
   // Get all the tags from the configuration file.
   let tags = [];
@@ -50,7 +51,7 @@ function makeTagAppearienceDictionary(filedata, confdata) {
   }
 
   // Separate the text to lines.
-  let lines = filedata.split("\r");
+  let lines = filedata.split("\n");
 
   // Scan the text and find tgas.
   for (let i = 0; i < lines.length; i++) {
@@ -102,7 +103,6 @@ function makeTagAppearienceDictionary(filedata, confdata) {
               );
               // This current tag does not exist in the dictionary of tags.
             } else {
-              // todo check the answer from pnina to this mikre katse.
               // What if the tag does not appeare in the dictionary (configuraition file).            }
             }
           } else {
@@ -117,6 +117,7 @@ function makeTagAppearienceDictionary(filedata, confdata) {
   return dictTagsAppearnce;
 }
 
+// get the dictionary mapping between the tags and their appearance and creates xml
 function makeXML(filename, conffilename, dicttags) {
   let tab = 0;
   let tabString = "";

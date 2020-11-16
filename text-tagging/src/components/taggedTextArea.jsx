@@ -13,7 +13,7 @@ class taggedTextArea extends Component {
     preHtmlFormatedText: [],
 
     isHighlightedTextTagged: false,
-    isUpTodate: true,
+    //isUpTodate: true,
   };
 
   // This function gets a character and returns if the character 
@@ -177,7 +177,10 @@ class taggedTextArea extends Component {
   // Tthe funtion update the whole text so the highlight segment will be
   // serroiunded by a tag.
   addTag = (event, data) => {
-    this.state.isUpTodate = false;
+    if (this.state.highlightedText == ""){
+      return;
+    }
+    //this.state.isUpTodate = false;
     let tagName = window.getSelection().anchorNode.parentElement.id;
     let text;
     if (tagName != "no_tag") {
@@ -198,11 +201,11 @@ class taggedTextArea extends Component {
         this.state.postHighlightedText;
     }
 
-    this.props.updateFileContent(text);
-
     this.state.preHighlightedText = "";
     this.state.higlight = "";
     this.state.postHighlightedText = "";
+
+    this.props.updateFileContent(text);
   };
 
   // Recognise the text the user Highlights, and the text segments that
@@ -245,10 +248,10 @@ class taggedTextArea extends Component {
     borders[0] += offset;
     borders[1] += offset;
 
-    this.setPreInAndAfterHighlightedText(formatedText, line, paragraph, borders, offset);
-
+    this.setPreInAndAfterHighlightedText(formatedText, line, paragraph, borders, offset)
   };
 
+  // calculate and return the start index and the end index of the highlighted text
   calcBordersOfHighlightedText = (base, extent) => {
     let leftBorder;
     let rightBorder;

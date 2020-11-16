@@ -4,14 +4,13 @@ var router = express.Router();
 var confLoader = require("../SettingsLoader");
 var conf = new confLoader();
 
+// returns to client the content of an article
 router.get("/:id", function (req, res, next) {
   let fileName = req.params.id;
   console.log("in openFile:" + fileName);
 
   let filePath = conf.getRootFolder() + "\\" + conf.getArticlesFolder() + "\\";
   fs.readFile(
-    //C:\\Users\\Yifat\\finalProject\\files\\articles\\
-    //C: \\Users\\Sapir\\Documents\\GitHub\\finalProject\\files\\articles\\
     filePath + fileName,
     "utf16le",
     function (err, data) {

@@ -36,7 +36,7 @@ class Main extends Component {
     isUpTodate: true,
 
     // Holds te lists of files, configuration files, and spesial character,
-    // the server have sent. ****
+    // the server have sent.
     filesList: [],
     confFileList: [],
     specialCharsList: [],
@@ -51,45 +51,48 @@ class Main extends Component {
     fileToUploadContent: "",
     newlyUploadedFileName: "",
     
-    // 
+    // Saves the title of the current page presented/
     pageLayout: "choose",
-    actions: ["clean file", "tagged file", "report", "html"],
+
+    // Holds a list of file types the user can download from the server.
+    fileTypes: ["clean file", "tagged file", "report", "html"],
   };
 
   //the function thats doing the first fetch with th server
-  callAPI() {
-    console.log("in callApi");
+  getConficurationFromServer() {
     fetch("http://localhost:9000/")
       .then((res) => res.text())
-      .then((res) => this.arrageFileNamesRecivedFromServer(res));
+      .then((res) => this.arrageConfigutationsFromServer(res));
   }
 
   //this function lunches automaticly with the built in when the websie is running
-  componentWillMount() {
-    this.callAPI();
+  //componentWillMount() {
+  componentDidMount(){
+      this.getConficurationFromServer();
   }
 
   //initialize the articles list, the configuration files, and special cases based
   //on the data that received from server and held by filnames
-  arrageFileNamesRecivedFromServer = (fileNames) => {
+  arrageConfigutationsFromServer = (configurations) => {
     // Saperate the files to text files and configuration files.
-    let files = fileNames.split("\n");
+    let confs = configurations.split("\n");
 
     // Seperate the text files names.
-    let textFiles = files[0].split(",");
+    let textFiles = confs[0].split(",");
 
     // Seperates the configuration file names.
-    let confFiles = files[1].split(",");
+    let confFiles = confs[1].split(",");
 
     // Seperate the spacial chars the marker will egnore.
-    let spacialChars = files[2].split(" ");
+    let spacialChars = confs[2].split(" ");
     spacialChars.push(" ");
     spacialChars.push("\n");
     spacialChars.push("\r");
 
-    this.setState({ filesList: textFiles });
-    this.setState({ confFileList: confFiles });
+    this.state.filesList = textFiles;
+    this.state.confFileList = confFiles;
     this.setState({ specialCharsList: spacialChars });
+    this.UpdateChosenFile();
   };
 
   //lunches when the user clicks on the upload bottun -
@@ -129,7 +132,7 @@ class Main extends Component {
   };
 
   //asks the server to generate statistic file to the file that the function describes
-  handleStatisticsFile = (eventArgs) => {
+  makeStatisticsFile = () => {
     let address = "http://localhost:9000/makeReport";
 
     fetch(address, {
@@ -142,31 +145,19 @@ class Main extends Component {
         confFileName: this.state.conffilename,
       }),
     }).then(function (response) {
-      let answer = response.body.getReader();
-      console.log();
     });
   };
 
   //the function sends a request to the server to save the changes the user did in the text
-  handleSaveFile = (eventArgs) => {
-    let request = this.state.filename + "\n" + this.state.fileContent;
+  handleSaveFile = (event) => {
+    this.makeStatisticsFile();
+    this.makeHtml();
+    this.saveFileToServer(this.state.filename, this.state.fileContent);
+    this.state.isUpTodate = true;
+  };
+
+  saveFileToServer = (fileTosaveName, fileTosaveData) =>{
     let address = "http://localhost:9000/saveFile";
-
-    let fileTosaveData = "";
-    let fileTosaveName = "";
-
-    // If the the save is of a new file
-    if (this.state.fileToUploadContent != "") {
-      fileTosaveData = this.state.fileToUploadContent;
-      fileTosaveName = this.state.fileToUploadName;
-      this.state.fileToUploadContent = "";
-      this.state.fileToUploadName = "";
-    } else {
-      fileTosaveName = this.state.filename;
-      fileTosaveData = this.state.fileContent;
-      this.handleStatisticsFile("");
-      this.makeHtml();
-    }
 
     fetch(address, {
       method: "POST",
@@ -179,19 +170,22 @@ class Main extends Component {
       let answer = response.body.getReader();
       console.log();
     });
-
-    this.state.isUpTodate = true;
-
-  };
+  }
 
   //returns to the main menu screen of the application
   // retrunToChooseFile
-  handleClickRetrunToMainMenu = (eventArgs) => {
+  handleClickRetrunToMainMenu = (event) => {
     if (!this.state.isUpTodate) {
-      this.handleClick1(eventArgs);
+      this.raiseWarning(event);
     } else {
       this.setState({ pageLayout: "choose" });
     }
+
+    // Set isUpTodate to  true, to allow the user
+    // to return to the main menu without saveing his work.
+    // (At the first attempt of a user to return to the main menu,
+    // a warning message appears, and at the secound attempt, 
+    // the application returns to the main menu).
     this.state.isUpTodate = true;
   };
 
@@ -238,17 +232,13 @@ class Main extends Component {
     this.setState({ filename: filename[0] });
     //the rest of the text
     this.setState({ fileContent: fileData });
-    //this.setTags();
-    //note
   };
 
   //recives configurtion file name and this file content and saves to local variables
   // previously called acceptConfigurationFilesFromServer
   setCurrentConfigurationFile = (text) => {
     let filename = text.split("\n");
-    this.setState({ conffilename: filename[0] });
     let conFileContent = filename.slice(1, filename.length);
-    this.state.configurationFileContent = conFileContent;
     let newTags = {}; //person: "yellow", place: "red", bla: "lightpink", period: "green"};
 
     // Helps to create the context menu.
@@ -262,9 +252,9 @@ class Main extends Component {
       newTags[pairKey] = pairValue;
     }
 
-    this.state.tagsAndColors = newTags;
+    this.state.conffilename = filename[0];
+    this.state.configurationFileContent = conFileContent;
     this.state.tagsList = tagslist;
-    //this.setTags();
     // Initiate setState so the view will update.
     this.setState({ tagsAndColors: newTags });
   };
@@ -272,16 +262,12 @@ class Main extends Component {
   //uploads new file to server and uses fetch request
   // previously called loadFile
   uploadFileToServer = (event) => {
-
-    this.state.fileToUploadContent = event.target.result;
-    this.state.newlyUploadedFileName = this.state.fileToUploadName;
-    this.handleSaveFile(event);
-
+    let fileToUploadContent = event.target.result;
+    this.saveFileToServer(this.state.fileToUploadName, fileToUploadContent);
+    
     // Get the updated list of files on the server.
-    fetch("http://localhost:9000/")
-      .then((res) => res.text())
-      .then((res) => this.arrageFileNamesRecivedFromServer(res))
-      .then(() => this.UpdateChosenFile());
+    this.getConficurationFromServer();
+  //  this.UpdateChosenFile();
   };
 
   //describes the html form of the highlighted file
@@ -316,21 +302,24 @@ class Main extends Component {
     });
   };
 
-  /////#
-  UpdateChosenFile = (res) => {
+  // this functions being used after uploading new file to the server
+  // checks if the uploading sucseeded and the updates the name of the chosen file to be the file that was uploaded 
+  UpdateChosenFile = () => {
     // If the list of files sent from the server had the file was added to the server.
     const exists = this.state.filesList.some(
-      (v) => v == this.state.newlyUploadedFileName
+      (v) => v == this.state.fileToUploadName
     );
     if (exists) {
       var textFile = document.getElementById("fileChoser");
-      textFile.value = this.state.newlyUploadedFileName;
+      textFile.value = this.state.fileToUploadName;
     }
+    this.state.fileToUploadName = "";
   };
 
+  // sends request to the server and asks for an article or configuration file
   //previously called handleChoosefile.
-  getFileFromServer = (filename) => {
-    var fileName = filename; //eventArgs.currentTarget.innerHTML.trim();
+  getFileFromServer = (fileName) => {
+    //var fileName = filename; //eventArgs.currentTarget.innerHTML.trim();
     if (!fileName.endsWith(".txt")) {
       var request = "http://localhost:9000/openConfigurationFile/" + fileName;
       fetch(request)
@@ -344,8 +333,9 @@ class Main extends Component {
     }
   };
 
-  //alert capara
-  handleClick1(e) {
+  // push notification to user when clicking on the "return to main menu" button
+  // without saving changes
+  raiseWarning(e) {
     e.preventDefault();
     Alert.info(
       "Make sure to save your changes before returning to the Main Menu",
@@ -395,7 +385,7 @@ class Main extends Component {
     if (this.state.pageLayout == "choose") {
       return this.returnMainMenuLayout();
     } else if (this.state.pageLayout == "edit") {
-      return this.returnTaggedTextArea();
+      return this.returnEditPageLayout();
     }
   };
 
@@ -466,7 +456,7 @@ class Main extends Component {
           <br></br>
           <select name="actionChooser" id="actionChooser">
             {" "}
-            {this.createList(this.state.actions)}
+            {this.createList(this.state.fileTypes)}
           </select>{" "}
           <select name="fileToDownloadChooser" id="fileToDownloadChooser">
             {" "}
@@ -502,7 +492,8 @@ class Main extends Component {
     return page;
   };
 
-  returnTaggedTextArea = () => {
+  // rendering the second screen of the application
+  returnEditPageLayout = () => {
     let page = (
       <div>
         <h6>
@@ -542,7 +533,7 @@ class Main extends Component {
           <div>
             <a
               href="#"
-              onClick={this.handleClick1}
+              onClick={this.raiseWarning}
               onClose={this.handleOnClose}
             ></a>
           </div>
@@ -552,6 +543,8 @@ class Main extends Component {
     return page;
   };
 
+  // after editing - adding/removing tag to the text - the content is the updated text
+  // and insert it to the local variable of the applications
   updateFileContent = (content) => {
     this.state.isUpTodate = false;
     this.setState({ fileContent: content });
