@@ -11,8 +11,6 @@ router.get("/:id", function (req, res, next) {
     conf.getRootFolder() + "\\" + conf.getConfigurationsFolder() + "\\";
 
   fs.readFile(
-    //C:\\Users\\Yifat\\finalProject\\files\\configuration\\
-    // "C:\\Users\\Sapir\\Documents\\GitHub\\finalProject\\files\\configuration\\" + fileName,
     filePath + fileName,
     "utf-8",
     function (err, data) {
@@ -22,8 +20,6 @@ router.get("/:id", function (req, res, next) {
       return res.end();
     }
   );
-
-  //res.send("laaaaaaaaaaaaaaaaassssssssssssssss");
 });
 
 module.exports = router;

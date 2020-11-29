@@ -1,6 +1,6 @@
 //appRootFolder=C:\\Users\\Sapir\\Documents\\GitHub\\finalProject\\files
 //appRootFolder=C:\\Users\\Yifat\\finalProject\\files
-appRootFolder=D:\StudentsProjects\finalProject\files
+appRootFolder=C:\\Users\\user\\Documents\\Pnina\\StudentProjects\\finalProject\\files
 articlesFolder=articles
 confFileFolder=configuration
 cleanFilesFolder=clean_files

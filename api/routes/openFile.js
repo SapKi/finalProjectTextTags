@@ -11,8 +11,6 @@ router.get("/:id", function (req, res, next) {
 
   let filePath = conf.getRootFolder() + "\\" + conf.getArticlesFolder() + "\\";
   fs.readFile(
-    //C:\\Users\\Yifat\\finalProject\\files\\articles\\
-    //C: \\Users\\Sapir\\Documents\\GitHub\\finalProject\\files\\articles\\
     filePath + fileName,
     "utf16le",
     function (err, data) {
