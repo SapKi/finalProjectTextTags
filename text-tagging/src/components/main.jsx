@@ -3,9 +3,6 @@ import Background from "../images/backgroundabout.jpg";
 import logo from "../images/logo.png";
 import biulogo from "../images/biulogo.png";
 import TaggedTextArea from "./taggedTextArea";
-import { ContextMenu, MenuItem, ContextMenuTrigger } from "react-contextmenu";
-import ReactDOM from "react-dom";
-import { throwStatement } from "@babel/types";
 import "react-s-alert/dist/s-alert-default.css";
 import Alert from "react-s-alert";
 import "react-s-alert/dist/s-alert-default.css";
@@ -28,6 +25,10 @@ const buttonStyle = {
 // backgroundSize: "100%",
 class Main extends Component {
   state = {
+    // Server port and address
+    serverPort: "9000",
+    serverAdress: "http://localhost",
+
     // Holds infornation on the files are cuurently being worked on.
     filename: "",
     conffilename: "",
@@ -60,7 +61,7 @@ class Main extends Component {
 
   //the function thats doing the first fetch with th server
   getConficurationFromServer() {
-    fetch("http://localhost:9000/")
+    fetch(this.state.serverAdress + ":" + this.state.serverPort + "/")
       .then((res) => res.text())
       .then((res) => this.arrageConfigutationsFromServer(res));
   }
@@ -133,7 +134,7 @@ class Main extends Component {
 
   //asks the server to generate statistic file to the file that the function describes
   makeStatisticsFile = () => {
-    let address = "http://localhost:9000/makeReport";
+    let address = this.state.serverAdress + ":" + this.state.serverPort + "/makeReport";
 
     fetch(address, {
       method: "POST",
@@ -157,7 +158,7 @@ class Main extends Component {
   };
 
   saveFileToServer = (fileTosaveName, fileTosaveData) =>{
-    let address = "http://localhost:9000/saveFile";
+    let address = this.state.serverAdress + ":" + this.state.serverPort + "/saveFile";
 
     fetch(address, {
       method: "POST",
@@ -167,7 +168,7 @@ class Main extends Component {
         filename: fileTosaveName,
       }),
     }).then(function (response) {
-      let answer = response.body.getReader();
+      //let answer = response.body.getReader();
       console.log();
     });
   }
@@ -199,11 +200,11 @@ class Main extends Component {
     conffilename = conffilename.value;
 
     let downloadedFileName = action + "_" + filename;
-    if (action == "html") {
+    if (action === "html") {
       downloadedFileName = filename + ".html";
     }
 
-    let address = "http://localhost:9000/downloadfile";
+    let address = this.state.serverAdress + ":" + this.state.serverPort + "/downloadfile";
     fetch(address, {
       method: "POST",
       headers: { "Content-type": "application/json" },
@@ -289,7 +290,7 @@ class Main extends Component {
     htmlFile += "</body>";
     htmlFile += "</html>";
 
-    let address = "http://localhost:9000/saveFile";
+    let address = this.state.serverAdress + ":" + this.state.serverPort + "/saveFile";
     fetch(address, {
       method: "POST",
       headers: { "Content-type": "application/json" },
@@ -298,7 +299,7 @@ class Main extends Component {
         filename: this.state.filename + ".html",
       }),
     }).then(function (response) {
-      let answer = response.body.getReader();
+      //let answer = response.body.getReader();
     });
   };
 
@@ -307,7 +308,7 @@ class Main extends Component {
   UpdateChosenFile = () => {
     // If the list of files sent from the server had the file was added to the server.
     const exists = this.state.filesList.some(
-      (v) => v == this.state.fileToUploadName
+      (v) => v === this.state.fileToUploadName
     );
     if (exists) {
       var textFile = document.getElementById("fileChoser");
@@ -320,13 +321,14 @@ class Main extends Component {
   //previously called handleChoosefile.
   getFileFromServer = (fileName) => {
     //var fileName = filename; //eventArgs.currentTarget.innerHTML.trim();
+    var request;
     if (!fileName.endsWith(".txt")) {
-      var request = "http://localhost:9000/openConfigurationFile/" + fileName;
+      request = this.state.serverAdress + ":" + this.state.serverPort + "/openConfigurationFile/" + fileName;
       fetch(request)
         .then((res) => res.text())
         .then((res) => this.setCurrentConfigurationFile(res));
     } else {
-      var request = "http://localhost:9000/openFile/" + fileName;
+      request = this.state.serverAdress + ":" + this.state.serverPort + "/openFile/" + fileName;
       fetch(request)
         .then((res) => res.text())
         .then((res) => this.setCurrentTextFile(res));
@@ -382,9 +384,9 @@ class Main extends Component {
 
   // Returns the current page the web sites has to present.
   returnPageLayout = () => {
-    if (this.state.pageLayout == "choose") {
+    if (this.state.pageLayout === "choose") {
       return this.returnMainMenuLayout();
-    } else if (this.state.pageLayout == "edit") {
+    } else if (this.state.pageLayout === "edit") {
       return this.returnEditPageLayout();
     }
   };
@@ -530,13 +532,6 @@ class Main extends Component {
             {" "}
             Return to Main Menu
           </button>
-          <div>
-            <a
-              href="#"
-              onClick={this.raiseWarning}
-              onClose={this.handleOnClose}
-            ></a>
-          </div>
         </p>
       </div>
     );

@@ -1,5 +1,4 @@
 import React, { Component } from "react";
-import ReactDOM from "react-dom";
 import { ContextMenu, MenuItem, ContextMenuTrigger } from "react-contextmenu";
 
 
@@ -20,7 +19,7 @@ class taggedTextArea extends Component {
   // is in the application's special characters' list.
   isSpecialChar = (character) => {
     for (let i = 0; i < this.props.specialCharsList.length; i++) {
-      if (this.props.specialCharsList[i] == character) {
+      if (this.props.specialCharsList[i] === character) {
         return true;
       }
     }
@@ -88,7 +87,7 @@ class taggedTextArea extends Component {
       // If the tag is a plain text.
       // (or a closing tag without an opening tag matches it).
       if (
-        (!regexIstag.test(parts[index]) && parts[index] != "") ||
+        (!regexIstag.test(parts[index]) && parts[index] !== "") ||
         regexIsCloseTag.test(parts[index])
       ) {
         // Add the text to the proccesd text.
@@ -177,13 +176,13 @@ class taggedTextArea extends Component {
   // Tthe funtion update the whole text so the highlight segment will be
   // serroiunded by a tag.
   addTag = (event, data) => {
-    if (this.state.highlightedText == ""){
+    if (this.state.highlightedText === ""){
       return;
     }
     //this.state.isUpTodate = false;
     let tagName = window.getSelection().anchorNode.parentElement.id;
     let text;
-    if (tagName != "no_tag") {
+    if (tagName !== "no_tag") {
       text =
         this.state.preHighlightedText +
         "<" +
@@ -211,7 +210,7 @@ class taggedTextArea extends Component {
   // Recognise the text the user Highlights, and the text segments that
   // comes before and after the Highlighted text.
   captureHighlightedText = (event, data) => {
-    if (window.getSelection() == NaN) {
+    if (isNaN(window.getSelection())) {
       return;
     }
 
@@ -281,21 +280,18 @@ class taggedTextArea extends Component {
     // Sreaching for the begining of the highlighted word.
     let begining;
     // If the first chracter is in a begining of a chunk.
-    if (leftIndex == 0) {
+    if (leftIndex === 0) {
       begining = leftIndex;
     } else {
       for (let index = leftIndex; index >= 0; index--) {
         // we reached the begining of the current paragraph.
-        if (index == 0) {
+        if (index === 0) {
           begining = index;
           // If we reached a space character.
         } else {
           let previousChar = textParagraph[index - 1];
           //(!(previousChar.match(/[a-z]/i) || previousChar.match(/[0-9]/)))
           if (this.isSpecialChar(previousChar)) {
-            //  previousChar == " " ||
-            //  previousChar == "\n" ||
-            //  previousChar == "\t"
             begining = index;
             break;
           }
@@ -306,17 +302,17 @@ class taggedTextArea extends Component {
     let end;
     //in case of automatic space added by clicking
     if (
-      rightIndex != leftIndex &&
+      rightIndex !== leftIndex &&
       this.isSpecialChar(textParagraph[rightIndex - 1])
     ) {
       end = rightIndex - 1;
-    } else if (rightIndex == textParagraph.length) {
+    } else if (rightIndex === textParagraph.length) {
       // If the last chracter is in the end of a chunk.
       end = rightIndex;
     } else {
       for (let index = rightIndex; index <= textParagraph.length; index++) {
         // If we reached the end of the paragraph.
-        if (index == textParagraph.length) {
+        if (index === textParagraph.length) {
           end = index;
           // If we reached a white space.
         } else {
@@ -346,7 +342,7 @@ class taggedTextArea extends Component {
       // If the line is the line where the highlighted text is in, run until
       // the part where the highlighted text is found.
       let end = text[i].length;
-      if (i == line) {
+      if (i === line) {
         end = paragraph;
       }
       for (let j = 0; j < end; j++) {
@@ -386,7 +382,7 @@ class taggedTextArea extends Component {
     let fileContent = this.props.fileContent;
 
     // If the highlited text is not already tagged.
-    if (formatedText[line][paragraph][0] != "%") {
+    if (formatedText[line][paragraph][0] !== "%") {
       preTag = fileContent.substring(0, borders[0]);
       inTag = fileContent.substring(borders[0], borders[1]);
       postTag = fileContent.substring(borders[1], fileContent.length);
@@ -458,7 +454,7 @@ class taggedTextArea extends Component {
   // "remove tag:.
   createMenu = () => {
     let menu;
-    if (this.state.isHighlightedTextTagged == false) {
+    if (this.state.isHighlightedTextTagged === false) {
       menu = this.props.tagsList.map((part, i) => (
         <MenuItem key={i} id={part} onClick={this.addTag}>
           {" "}
